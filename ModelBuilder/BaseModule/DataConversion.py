@@ -1,9 +1,7 @@
 # coding=utf-8
 
-import sys
+# import sys
 import json
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 '''DataFrame to Json'''

@@ -1,10 +1,8 @@
 # coding=utf-8
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 from pymongo import MongoClient
+
 
 class DBMongo():
     def __init__(self, port=10001):
@@ -18,7 +16,7 @@ class DBMongo():
         try:
             self.db = self.client[dbName]
         except IOError:
-            print 'no such database named %s' % dbName
+            print('no such database named %s' % dbName)
 
     def openColl(self, collName):
         self.coll = self.db[collName]
@@ -44,10 +42,12 @@ class DBMongo():
         
     def printRes(self):
         for (k, v) in self.res.items():
-            print k, len(v)
+            print(k, len(v))
+
 
 def usage():
-    print 'usage: ', 'python mongo.py port'
+    print('usage: ', 'python mongo.py port')
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

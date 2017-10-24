@@ -8,8 +8,6 @@ import PreProcessing as pp
 import LocalReceiver as lr
 import MongoReceiver
 import DataSampling as ds
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import traceback
 
 
@@ -35,21 +33,21 @@ def get_origin_data(data_src, data_path, delim, target_fields):
             dic_exp['unixTime'] = pp.Unixtime2Hour(dic_exp['unixTime'])
             dic_clc['unixTime'] = pp.Unixtime2Hour(dic_clc['unixTime'])
 
-            print 'exposure: ', len(dic_exp['unixTime']), '*'*30
+            print('exposure: ', len(dic_exp['unixTime']), '*'*30)
             for k, v in dic_exp.items():
                 if len(set(v)) > threshold:
-                    print '%s: ' % k, len(set(v))
+                    print('%s: ' % k, len(set(v)))
 
-            print 'click: ', len(dic_clc['unixTime']), '*'*30
+            print('click: ', len(dic_clc['unixTime']), '*'*30)
             for k, v in dic_clc.items():
                 if len(set(v)) > threshold:
-                    print '%s: ' % k, len(set(v))
+                    print('%s: ' % k, len(set(v)))
 
             dic_merge = ds.merge_data(dic_exp, dic_clc, 'up')
-            print 'merged: ', len(dic_merge['unixTime']), '*'*30
+            print('merged: ', len(dic_merge['unixTime']), '*'*30)
             for k, v in dic_merge.items():
                 if len(set(v)) > threshold:
-                    print '%s: ' % k, len(set(v))
+                    print('%s: ' % k, len(set(v)))
 
         elif data_src == "mongo":
             mr = MongoReceiver.Receiver(10001)

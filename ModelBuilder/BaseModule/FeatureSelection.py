@@ -9,8 +9,6 @@ import hashlib
 import binascii
 import time
 from scipy.stats import pearsonr
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 '''merge factors'''
@@ -20,11 +18,11 @@ def __mergefeature(dataframe):
     columns = dataframe.columns
     init = len(columns)
     dic = {}
-    for i in xrange(init):
+    for i in range(init):
         if columns[i] == "clicked":
             continue
         dic[columns[i]] = [min(dataframe[columns[i]]), max(dataframe[columns[i]])]
-        for j in xrange(i + 1, init):
+        for j in range(i + 1, init):
             if columns[j] == "clicked":
                 continue
             new_key = columns[i] + "_" + columns[j]
@@ -38,8 +36,8 @@ def __mergefeature(dataframe):
 
 def MergeFeature(dataframe):
     init = len(dataframe.columns)
-    for i in xrange(init):
-        for j in xrange(i + 1, init):
+    for i in range(init):
+        for j in range(i + 1, init):
             new_key = dataframe.columns[i] + "_" + dataframe.columns[j]
             dataframe[new_key] = dataframe[dataframe.columns[i]] + dataframe[dataframe.columns[j]]
     return dataframe

@@ -1,8 +1,6 @@
 # coding=utf-8
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import paramiko
 # import json
 import traceback
@@ -83,7 +81,7 @@ class RemoteServerOperation(object):
                         cmd = 'grep "\\\"wcAdId\\\":\\\"%s\\\"" %s >> ./xcy_tmp' % (adid, remote_path+dirs+"/"+filename)
                         self.execute_commands(ssh_connect, cmd)
                 ftp.get("./xcy_tmp", local_path+dirs+"/"+dirs)
-                print '%s download complete!' % dirs
+                print('%s download complete!' % dirs)
             ftp.close()
         except:
             traceback.print_exc()
@@ -104,5 +102,5 @@ if __name__ == '__main__':
     server_operator.get_remote_data(ssh_connect, "/opt/Jarvis/report/logs/", "../../../", target_file_dict)
     ssh_connect.close()
 
-    print "Downloading Cost: ", time.time() - st_time
+    print("Downloading Cost: ", time.time() - st_time)
 

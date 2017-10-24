@@ -1,8 +1,6 @@
 # coding=utf-8
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import mongo as mog
 # import traceback
 
@@ -13,8 +11,8 @@ class Receiver():
     def __init__(self, port):
         try:
             self.dm = mog.DBMongo(port)
-        except Exception, e:
-            print Exception, ':', e
+        except Exception as e:
+            print(Exception, ':', e)
 
     def receiver(self, database_name, table_name, target):
         self.dm.connectDB(database_name)
@@ -28,6 +26,6 @@ if __name__ == "__main__":
               'wcAcId', 'wcOrgBidPrice', 'appMediaCat', 'clicked']
     try:
         mg = Receiver(10001)
-        print mg.receiver('pCTR', 'wuhu', target)
-    except Exception, e:
-        print Exception, e
+        print(mg.receiver('pCTR', 'wuhu', target))
+    except Exception as e:
+        print(Exception, e)

@@ -1,14 +1,14 @@
 # coding=utf-8
 
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+# import sys
 
 
-'''
-count different time intervals of data that is in list format
-'''
 def Counter(lis):
+    """
+    count different time intervals of data that is in list format
+    :param lis:
+    :return:
+    """
     dic_cnt = {}
     for element in lis:
         int_element = int(element)

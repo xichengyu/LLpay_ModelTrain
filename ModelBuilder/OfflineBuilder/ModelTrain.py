@@ -1,9 +1,6 @@
 # coding=utf-8
 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-reload(sys)
 sys.path.append("../BaseModule")
 sys.path.append("../../DataReceiver")
 from pandas import DataFrame
@@ -92,7 +89,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
             '''dummy coding & normalization'''
             st_time = time.time()
             print ('\033[1;35;40m')
-            print "Normalizing data..."
+            print("Normalizing data...")
             print ('\033[0m')
             # dic = pp.DummyCoding(dic, dum_coding_fields)
             # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
@@ -104,7 +101,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
 
             '''merge features'''
             print ('\033[1;35;40m')
-            print "Merging DataFrame..."
+            print("Merging DataFrame...")
             print ('\033[0m')
             data = fs.VarSelection(data)
             data = data.sort_index(axis=1, ascending=True)
@@ -116,7 +113,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
 
             '''select features'''
             print ('\033[1;35;40m')
-            print "selecting Features..."
+            print("selecting Features...")
             print ('\033[0m')
             data = fs.__selectfeature(data)
             # print data
@@ -125,7 +122,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
         else:
             '''dummy coding & normalization'''
             print ('\033[1;35;40m')
-            print "Normalizing data..."
+            print("Normalizing data...")
             print ('\033[0m')
             dic_norm = norm_data(dic)
             joblib.dump(dic_norm[1], "../../conf/feature_value_bounds.cf")
@@ -139,7 +136,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
 
         '''sort data in ascending order'''
         print ('\033[1;35;40m')
-        print "Sort data..."
+        print("Sort data...")
         print ('\033[0m')
         data = data.sort_index(axis=1, ascending=True)
         # print data
@@ -200,12 +197,12 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
             met.ROC("RF", predict_y, target)
             joblib.dump(rf, "../../conf/rf_model.jm")
 
-        print 'norm_cost: ', norm_time - st_time
-        print 'merge_cost: ', merge_time - norm_time
-        print 'select_cost: ', select_time - merge_time
-        print 'sort_cost: ', sort_time - select_time
-        print 'train_cost: ', train_time - sort_time
-        print 'total_cost: ', train_time - st_time
+        print('norm_cost: ', norm_time - st_time)
+        print('merge_cost: ', merge_time - norm_time)
+        print('select_cost: ', select_time - merge_time)
+        print('sort_cost: ', sort_time - select_time)
+        print('train_cost: ', train_time - sort_time)
+        print('total_cost: ', train_time - st_time)
 
     except:
         traceback.print_exc()

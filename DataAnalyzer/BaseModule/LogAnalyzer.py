@@ -2,9 +2,7 @@
 
 import codecs
 import os
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+# import sys
 import json
 import time
 import traceback
@@ -122,5 +120,5 @@ def unixtime2hour(lis, interval):  # interval: %y %m %d %H %M %S
 
 if __name__ == "__main__":
     # analyze_log(log_path, output_type="dict")
-    print analyze_log(log_path, output_path, output_type="csv")
-    print "log analysis complete!"
+    print(analyze_log(log_path, output_path, output_type="csv"))
+    print("log analysis complete!")

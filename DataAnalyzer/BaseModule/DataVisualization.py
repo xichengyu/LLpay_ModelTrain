@@ -1,9 +1,7 @@
 # coding=utf-8
 
-import sys
+# import sys
 from matplotlib import pylab as plb
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import os
 
 

@@ -1,13 +1,8 @@
 # coding=utf-8
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
+# import sys
 
 '''get original data in dict format'''
-
-
 def GetDict(title, lis, div):
     dic_exposure = {}
     dic_click = {}

@@ -5,8 +5,6 @@ from sklearn.externals import joblib
 from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression, LinearRegression
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 '''LinearRegression'''
 

@@ -1,8 +1,6 @@
 # coding=utf-8
 
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 sys.path.append("../BaseModule")
 sys.path.append("../../Base")
 import LogAnalyzer
@@ -21,7 +19,7 @@ if __name__ == '__main__':
 
     # get base information
     baseinfo = BaseStatisticInfo.get_baseinfo(data)
-    print baseinfo
+    print(baseinfo)
 
     exposure_data = data[0]
     click_data = data[1]

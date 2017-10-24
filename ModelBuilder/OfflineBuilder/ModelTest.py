@@ -15,8 +15,6 @@ from sklearn.metrics import auc
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 import json
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import traceback
 import ModelTrain
 # from matplotlib import pylab as plb
@@ -40,7 +38,7 @@ def normalize_input_data(json_fmt, keys, bounds, merge_bounds, dum_coding_fields
             return "Empty Input!!"
         '''load json'''
         origin_keys = json.loads(json_fmt, encoding="utf-8")
-        print "origin_keys:\n", len(origin_keys), len(origin_keys['unixTime'])
+        print("origin_keys:\n", len(origin_keys), len(origin_keys['unixTime']))
 
         '''verify data format'''
         if not isinstance(origin_keys['unixTime'], list):  # verify data format
@@ -50,7 +48,7 @@ def normalize_input_data(json_fmt, keys, bounds, merge_bounds, dum_coding_fields
 
         '''unixtime to hour'''
         origin_keys['unixTime'] = pp.Unixtime2Hour(origin_keys['unixTime'])
-        print "unixtime to hour:\n", len(origin_keys), len(origin_keys['unixTime'])
+        print("unixtime to hour:\n", len(origin_keys), len(origin_keys['unixTime']))
 
         '''dummy coding
         if origin_len == 1:
@@ -71,18 +69,18 @@ def normalize_input_data(json_fmt, keys, bounds, merge_bounds, dum_coding_fields
             except:
                 origin_keys[k] = pp.Str2Md5(origin_keys[k])
                 continue
-        print "string to md5 & int:\n", len(origin_keys), len(origin_keys['unixTime'])
+        print("string to md5 & int:\n", len(origin_keys), len(origin_keys['unixTime']))
 
         '''max_min input data'''
         for key in origin_keys:
             if key in bounds:
                 origin_keys[key] = [abs(x - bounds[key][0]) / (bounds[key][1] - bounds[key][0]) for x in origin_keys[key]]
-        print "max_min:\n", len(origin_keys), len(origin_keys['unixTime'])
+        print("max_min:\n", len(origin_keys), len(origin_keys['unixTime']))
 
         '''merge features'''
         origin_keys = DataFrame(origin_keys).sort_index(axis=1, ascending=True)
         origin_keys = fs.MergeFeature(origin_keys)
-        print "merge:\n", len(origin_keys.columns), len(origin_keys['unixTime'])
+        print("merge:\n", len(origin_keys.columns), len(origin_keys['unixTime']))
 
         '''return final dict'''
         for key in keys:
@@ -103,7 +101,7 @@ def get_train_test_data(data_src, data_path, delim, target_fields, sample_type, 
         if data_src == "local":
             '''get original data'''
             print ('\033[1;35;40m')
-            print "getting Original data..."
+            print("getting Original data...")
             print ('\033[0m')
             dic_exp, dic_clc = lr.GetOriginData2(data_path, delim, target_fields)  # get original data
             # print DataFrame(dic_exp)
@@ -165,7 +163,7 @@ if __name__ == '__main__':
                 dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
                 dr_model = joblib.load('../../conf/dr_model.cf')
                 input_test_features = [x for x in keys if x.find('_') == -1]
-                print input_test_features
+                print(input_test_features)
 
                 target = []
 
@@ -183,8 +181,8 @@ if __name__ == '__main__':
 
                     met.ROC(algorithm, predict_y, target)
                     fpr, tpr, thresholds = roc_curve(target, predict_y)
-                    print fpr, tpr, thresholds
-                    print roc_auc_score(target, predict_y)
+                    print(fpr, tpr, thresholds)
+                    print(roc_auc_score(target, predict_y))
 
                 else:
                     for origin_test_data in test_data_list:
@@ -203,14 +201,14 @@ if __name__ == '__main__':
                         fpr, tpr, thresholds = roc_curve(target, predict_y)
                         # plb.plot(fpr, tpr)
                         # print fpr, tpr, thresholds
-                        print 'roc_auc_score: ', roc_auc_score(target, predict_y)
-                        print 'auc: ', auc(fpr, tpr)
+                        print('roc_auc_score: ', roc_auc_score(target, predict_y))
+                        print ('auc: ', auc(fpr, tpr))
                         sum_auc += auc(fpr, tpr)
                     # plb.savefig('%s' % algorithm)
 
-            print 'train_data: %d %d test_data: %d %d avg_auc: %f' % \
+            print('train_data: %d %d test_data: %d %d avg_auc: %f' % \
                       (len(train_data_list), len(train_data_list[0]['unixTime']), len(test_data_list),
-                       len(test_data_list[0]['unixTime']), (sum_auc/len(train_data_list)/len(test_data_list)))
+                       len(test_data_list[0]['unixTime']), (sum_auc/len(train_data_list)/len(test_data_list))))
 
     except:
         traceback.print_exc()

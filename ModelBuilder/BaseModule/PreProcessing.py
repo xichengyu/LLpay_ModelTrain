@@ -9,9 +9,6 @@ import hashlib
 import binascii
 import time
 from scipy.stats import pearsonr
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 
 '''transform unixtime to hour, both 'ms' and 's' '''
 
