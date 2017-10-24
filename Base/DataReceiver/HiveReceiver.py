@@ -60,6 +60,7 @@ def detect_str_column(nparray):
     for idx in range(nparray.shape[-1]):
         try:
             new_nparray = np.column_stack((new_nparray, nparray[:, idx].astype(float)))
+            fnew.write(columns[idx] + "\n")
         except ValueError:
             prints(columns[idx], nparray[:, idx])
             fdrop.write(columns[idx] + "\n")
