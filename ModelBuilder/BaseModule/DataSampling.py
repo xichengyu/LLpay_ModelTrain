@@ -69,31 +69,21 @@ def create_testdata(dic_exp, dic_clc, num=10000, partition_n=None):
     return test_data
 
 
-def random_sampling(dic_exp, dic_clc, sample_type, train_partition_n, test_partition_n, num=10000, percentage=None):
+def random_sampling(data_matrix, sample_type, train_partition_n, test_partition_n, num=100000, percentage=None):
     train_data = []
     test_data = []
     try:
-        exp_len = len(dic_exp['timestamp']) if 'timestamp' in dic_exp else len(dic_exp['unixTime'])
-        clc_len = len(dic_clc['timestamp']) if 'timestamp' in dic_clc else len(dic_clc['unixTime'])
-        exp_selected_index = set(random.sample(range(exp_len), num if percentage is None else int(exp_len * percentage)))
-        clc_selected_index = set(random.sample(range(clc_len), num if percentage is None else int(clc_len * percentage)))
+        shape_tuple = data_matrix.shape
+        selected_index = random.sample(range(shape_tuple[0]), num if percentage is None else int(shape_tuple[0] * percentage))
 
         dic_exposure = {}
-        dic_click = {}
         new_dic_exp = {}
-        new_dic_clc = {}
         for k, values in dic_exp.items():
             for i, value in enumerate(values):
                 if i in exp_selected_index:
                     dic_exposure.setdefault(k, dic_exposure.get(k, [])).append(value)
                 else:
                     new_dic_exp.setdefault(k, new_dic_exp.get(k, [])).append(value)
-        for k, values in dic_clc.items():
-            for i, value in enumerate(values):
-                if i in clc_selected_index:
-                    dic_click.setdefault(k, dic_click.get(k, [])).append(value)
-                else:
-                    new_dic_clc.setdefault(k, new_dic_clc.get(k, [])).append(value)
 
         train_data = create_traindata(dic_exposure, dic_click, partition_n=train_partition_n, sample_type=sample_type, multiple=5)
         test_data = create_testdata(new_dic_exp, new_dic_clc, num=10000, partition_n=test_partition_n)

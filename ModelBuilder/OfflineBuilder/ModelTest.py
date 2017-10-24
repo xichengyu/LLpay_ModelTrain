@@ -100,15 +100,12 @@ def get_train_test_data(data_src, data_path, delim, target_fields, sample_type, 
     try:
         if data_src == "local":
             '''get original data'''
-            print ('\033[1;35;40m')
             print("getting Original data...")
-            print ('\033[0m')
-            dic_exp, dic_clc = lr.GetOriginData2(data_path, delim, target_fields)  # get original data
-            # print DataFrame(dic_exp)
-            # print DataFrame(dic_clc)
+            raw_data = joblib.load(data_path)  # get original data
+            print(DataFrame(raw_data))
 
             '''create train_data, test_data'''
-            train_data, test_data = ds.random_sampling(dic_exp, dic_clc, sample_type, train_partition_n,
+            train_data, test_data = ds.random_sampling(raw_data, sample_type, train_partition_n,
                                                        test_partition_n, percentage=percentage)
 
         elif data_src == "mongo":
@@ -124,7 +121,7 @@ if __name__ == '__main__':
 
     preprocessing_flag = True
 
-    data_path = "../../data/fangdichan.csv"
+    data_path = "../../data/raw_data.dt"
 
     algorithm = "GBDT"      # RF, GBDT, LR
 
