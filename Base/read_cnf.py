@@ -1,7 +1,7 @@
 # coding=utf-8
 
 
-def get_conf_info(conf_path="./conf/cnf.txt"):
+def get_conf_info(conf_path="../conf/cnf.txt"):
     conf_dict = {}
     try:
         for line in open(conf_path):
