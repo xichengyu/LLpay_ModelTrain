@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='[%Y-%m-%d %H:%M:%S]', filename='conf/discretion.log', filemode='w')
+                    datefmt='[%Y-%m-%d %H:%M:%S]', filename='hive.log', filemode='w')
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
