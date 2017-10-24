@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     test_sql = "select * from %s" % get_conf_info()["table"]
 
-    data_zz_iv = detect_str_column(fetch_from_hive(test_sql))
+    data_zz_iv = detect_str_column(np.array(fetch_from_hive(test_sql)))
 
     joblib.dump(data_zz_iv, "%s" % get_conf_info()["raw_data"])
     print(np.array(data_zz_iv).shape)
