@@ -49,6 +49,6 @@ def load_local_data(localpath, default=-1.0):
 
 if __name__ == "__main__":
     localpath = "../../data/raw_data.dt"
-    res = read_local_data(localpath)
+    res = load_local_data(localpath)
 
     prints(res.shape, res[0])
