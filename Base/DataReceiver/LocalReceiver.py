@@ -8,6 +8,8 @@ import sys
 sys.path.append("../")
 from read_cnf import get_conf_info
 from print_switch import prints
+from sklearn.preprocessing import Imputer
+
 
 def read_local_data(localpath, default=-1.0):
     """
@@ -41,10 +43,7 @@ def load_local_data(localpath, default=-1.0):
     :return:
     """
     res = np.array(joblib.load(localpath))
-    # for idx in range(res.shape[-1]):        # replace non_type value with -1.0
-    #     res[:, idx][np.where((res[:, idx] == '') | (res[:, idx] == None))[0]] = default
-
-    res[np.isnan(res)] = default
+    res[np.isnan(res)] = default            # preprocessing.Imputer
 
     prints(res[0])
     return res
