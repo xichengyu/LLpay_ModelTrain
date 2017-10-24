@@ -3,7 +3,7 @@
 import sys
 from pandas import DataFrame
 sys.path.append('../BaseModule')
-sys.path.append("../../DataReceiver")
+sys.path.append("../../Base/DataReceiver")
 import PreProcessing as pp
 import FeatureSelection as fs
 import ModelEvaluationTool as met
@@ -122,8 +122,6 @@ def get_train_test_data(data_src, data_path, delim, target_fields, sample_type, 
 
 if __name__ == '__main__':
 
-    dic_exp = {}
-    dic_clc = {}
     preprocessing_flag = True
 
     data_path = "../../data/fangdichan.csv"

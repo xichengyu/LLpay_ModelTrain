@@ -33,8 +33,6 @@ dum_coding_fields = ["unixTime", "networkMode", "mobileOs", "appMediaCat"]
 delim = ";"
 area_delim = ","
 
-'''['appMediaCat', 'appName', 'ip', 'networkMode', 'price', 'unixTime', 'wcAcId']'''
-
 ''''normalize dict data'''
 
 
