@@ -41,8 +41,11 @@ def load_local_data(localpath, default=-1.0):
     :return:
     """
     res = np.array(joblib.load(localpath))
-    for idx in range(res.shape[-1]):        # replace non_type value with -1.0
-        res[:, idx][np.where((res[:, idx] == '') | (res[:, idx] == None))[0]] = default
+    # for idx in range(res.shape[-1]):        # replace non_type value with -1.0
+    #     res[:, idx][np.where((res[:, idx] == '') | (res[:, idx] == None))[0]] = default
+
+    res[np.isnan(res)] = default
+
     prints(res[0])
     return res
 
