@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 # import itertools
 import logging
-# import os
+import sys
 # import random
 # import re
 # import functools
@@ -12,7 +12,8 @@ import logging
 import numpy as np
 # import pandas as pd
 from sklearn.externals import joblib
-
+sys.path.append("../")
+from read_cnf import get_conf_info
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='[%Y-%m-%d %H:%M:%S]', filename='../hive.log', filemode='w')
@@ -41,9 +42,9 @@ def fetch_from_hive(sql):
 
 if __name__ == "__main__":
 
-    test_sql = "select * from dbmodel.data_xicy_fullstep_sample"
+    test_sql = "select * from %s" % get_conf_info()["table"]
 
     data_zz_iv = fetch_from_hive(test_sql)
 
-    joblib.dump(data_zz_iv, "../raw_data.dt")
+    joblib.dump(data_zz_iv, "%s" % get_conf_info()["raw_data"])
     print(np.array(data_zz_iv).shape)

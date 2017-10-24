@@ -2,7 +2,7 @@
 
 import sys
 sys.path.append("../BaseModule")
-sys.path.append("../../DataReceiver")
+sys.path.append("../../Base/DataReceiver")
 from pandas import DataFrame
 # import numpy as np
 # from sklearn.feature_selection import SelectFromModel
