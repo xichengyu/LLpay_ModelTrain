@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='[%Y-%m-%d %H:%M:%S]', filename='hive.log', filemode='w')
+                    datefmt='[%Y-%m-%d %H:%M:%S]', filename='../hive.log', filemode='w')
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
@@ -45,5 +45,5 @@ if __name__ == "__main__":
 
     data_zz_iv = fetch_from_hive(test_sql)
 
-    joblib.dump(data_zz_iv, "raw_data.dt")
+    joblib.dump(data_zz_iv, "../raw_data.dt")
     print(np.array(data_zz_iv).shape)
