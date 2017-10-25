@@ -25,7 +25,7 @@ def create_traindata(train_matrix, partition_n=1, sampling_process="up", multipl
                     remain_bad = int(float(good_sample.shape[0]) / (multiple * bad_sample.shape[0]) + 0.5) - 1
                 for j in range(remain_bad):
                     prints(tmp_data.shape, bad_sample.shape)
-                    tmp_data = np.stack((tmp_data, bad_sample))
+                    tmp_data = np.row_stack((tmp_data, bad_sample))
             elif sampling_process == "down":
                 pass
             elif sampling_process is None:
