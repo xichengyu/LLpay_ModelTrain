@@ -1,24 +1,20 @@
 # coding=utf-8
 
-# import sys
+import sys
 import random
 import traceback
+import numpy as np
+sys.path.append("../../Base/")
+from print_switch import prints
 
 
-def create_traindata(dic_exposure, dic_click, partition_n, sample_type=None, multiple=None):
+def create_traindata(train_matrix, partition_n, sampling_process="up", multiple=None):
+    shape_matrix = train_matrix.shape
     train_data = []
     try:
-        len_exp = len(dic_exposure["clicked"])
-        len_clc = len(dic_click["clicked"])
-
         for i in range(partition_n):
-            tmp_exp, tmp_clc = {}, {}
-            for k, values in dic_exposure.items():
-                tmp_exp[k] = tmp_exp.get(k, []) + values[len_exp/partition_n * i:len_exp/partition_n * (i+1)]
-            for k, values in dic_click.items():
-                tmp_clc[k] = tmp_clc.get(k, []) + values[len_clc/partition_n * i:len_clc/partition_n * (i+1)]
-
-            if sample_type == "up":
+            tmp_data = train_matrix[shape_matrix[0]/partition_n * i:shape_matrix[0]/partition_n * (i+1), :]
+            if sampling_process == "up":
                 if multiple is None:
                     remain_click = 1
                 else:
@@ -26,9 +22,9 @@ def create_traindata(dic_exposure, dic_click, partition_n, sample_type=None, mul
                 for i in range(remain_click):
                     for k in tmp_exp:
                         tmp_exp[k] += tmp_clc[k]
-            elif sample_type == "down":
+            elif sampling_process == "down":
                 pass
-            elif sample_type is None:
+            elif sampling_process is None:
                 pass
 
             train_data.append(tmp_exp)
@@ -69,23 +65,22 @@ def create_testdata(dic_exp, dic_clc, num=10000, partition_n=None):
     return test_data
 
 
-def random_sampling(data_matrix, sample_type, train_partition_n, test_partition_n, num=100000, percentage=None):
-    train_data = []
-    test_data = []
+def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
+    shape_tuple = data_matrix.shape
+    train_data = np.array([[]]*shape_tuple[-1])
+    test_data = np.array([[]]*shape_tuple[-1])
     try:
-        shape_tuple = data_matrix.shape
-        selected_index = random.sample(range(shape_tuple[0]), num if percentage is None else int(shape_tuple[0] * percentage))
+        selected_index = set(random.sample(range(shape_tuple[0]), num if train_percentile is None else int(shape_tuple[0] * train_percentile)))
 
-        dic_exposure = {}
-        new_dic_exp = {}
-        for k, values in dic_exp.items():
-            for i, value in enumerate(values):
-                if i in exp_selected_index:
-                    dic_exposure.setdefault(k, dic_exposure.get(k, [])).append(value)
-                else:
-                    new_dic_exp.setdefault(k, new_dic_exp.get(k, [])).append(value)
+        for idx in range(shape_tuple[0]):
+            if idx in selected_index:
+                train_data = np.stack(train_data, data_matrix[idx, :])
+            else:
+                test_data = np.stack(test_data, data_matrix[idx, :])
 
-        train_data = create_traindata(dic_exposure, dic_click, partition_n=train_partition_n, sample_type=sample_type, multiple=5)
+        print(train_data.shape, test_data.shape)
+
+        train_data = create_traindata(train_data, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
         test_data = create_testdata(new_dic_exp, new_dic_clc, num=10000, partition_n=test_partition_n)
     except:
         traceback.print_exc()
