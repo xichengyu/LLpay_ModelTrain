@@ -13,7 +13,7 @@ def create_traindata(train_matrix, partition_n=1, sampling_process="up", multipl
     train_data = []
     try:
         for i in range(partition_n):
-            tmp_data = train_matrix[shape_matrix[0]/partition_n * i:shape_matrix[0]/partition_n * (i+1), :]
+            tmp_data = train_matrix[int(shape_matrix[0]/partition_n * i):int(shape_matrix[0]/partition_n * (i+1)), :]
 
             good_sample = tmp_data[tmp_data[:, 0] == 0]
             bad_sample = tmp_data[tmp_data[:, 0] == 1]
@@ -37,18 +37,18 @@ def create_traindata(train_matrix, partition_n=1, sampling_process="up", multipl
     return train_data
 
 
-def create_testdata(test_matrix, num=10000, partition_n=1):
+def create_testdata(test_matrix, partition_n=1):
     shape_matrix = test_matrix.shape
-    train_data = []
+    test_data = []
     try:
         for i in range(partition_n):
-            tmp_data = test_matrix[shape_matrix[0]/partition_n * i:shape_matrix[0]/partition_n * (i+1), :]
+            tmp_data = test_matrix[int(shape_matrix[0]/partition_n * i):int(shape_matrix[0]/partition_n * (i+1)), :]
 
-            train_data.append(tmp_data)
+            test_data.append(tmp_data)
     except:
         traceback.print_exc()
         pass
-    return train_data
+    return test_data
 
 
 def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
@@ -63,7 +63,7 @@ def random_sampling(data_matrix, sampling_process, train_partition_n, test_parti
         prints(train_data_tmp.shape, test_data_tmp.shape)
 
         train_data = create_traindata(train_data_tmp, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
-        test_data = create_testdata(test_data_tmp, num=10000, partition_n=test_partition_n)
+        test_data = create_testdata(test_data_tmp, partition_n=test_partition_n)
     except:
         traceback.print_exc()
         pass
