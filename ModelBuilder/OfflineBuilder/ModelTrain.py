@@ -70,17 +70,15 @@ def norm_data(dic):
         raise ValueError
 
 
-def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True):
+def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True, y_idx=0):
     try:
-        dic = train_data
+        joblib.dump(train_data[y_idx, :], "../../data/target.dt")
 
-        joblib.dump(dic['clicked'], "../../conf/target.dt")
-        test_dic=dic.copy()
-        test_dic.pop('clicked')
-        joblib.dump(test_dic, "../../conf/test_data.dt")
+        train_data = np.delete(train_data, y_idx, axis=1)
+
+        joblib.dump(train_data, "../../data/train_data.dt")
 
         '''unixtime to hour'''
-        dic['unixTime'] = pp.Unixtime2Hour(dic['unixTime'])
 
         if if_preprocessing:
             '''dummy coding & normalization'''
@@ -90,7 +88,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True)
             print ('\033[0m')
             # dic = pp.DummyCoding(dic, dum_coding_fields)
             # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
-            dic_norm = norm_data(dic)
+            dic_norm = norm_data(train_data)
             joblib.dump(dic_norm[1], "../../conf/feature_value_bounds.cf")
             data = DataFrame(dic_norm[0])
             # print data

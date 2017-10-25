@@ -93,7 +93,7 @@ def normalize_input_data(json_fmt, keys, bounds, merge_bounds, dum_coding_fields
     return DataFrame(dic)
 
 
-def get_train_test_data(data_src, data_path, delim, target_fields, sampling_process, percentage, train_partition_n, test_partition_n):
+def get_train_test_data(data_src, data_path, delim, target_fields):
     train_data = []
     test_data = []
     try:
@@ -105,8 +105,8 @@ def get_train_test_data(data_src, data_path, delim, target_fields, sampling_proc
             print(DataFrame(raw_data))
 
             '''create train_data, test_data'''
-            train_data, test_data = ds.random_sampling(raw_data, sampling_process, train_partition_n,
-                                                       test_partition_n, train_percentile=percentage)
+            randsamp = ds.RandSamp()
+            train_data, test_data = randsamp.random_sampling(raw_data)
 
         elif data_src == "hive":
             pass
@@ -125,15 +125,15 @@ if __name__ == '__main__':
 
     algorithm = "GBDT"      # RF, GBDT, LR
 
-    total_partition_n = [2.0]
-    train_partition_n = [1.0]
+    total_partition_n = [1]
+    train_partition_n = [1]
 
     # total_partition_n = [x * 1.0 for x in range(2, 21)]
     # train_partition_n = [x - 1.0 for x in total_partition_n]
 
     # total_partition_n = [10.0]*9 + [x * 1.0 for x in range(2, 21)]
     # train_partition_n = [x*1.0 for x in range(1, 10)] + [x - 1.0 for x in [x * 1.0 for x in range(2, 21)]]
-
+    '''
     train_data_list, test_data_list = get_train_test_data(data_src=data_src, data_path=data_path, delim=delim,
                                                           target_fields=target_fields, sampling_process='up',
                                                           percentage=0.7, train_partition_n=5, test_partition_n=1)
@@ -147,10 +147,7 @@ if __name__ == '__main__':
         for k, v in dict(zip(train_partition_n, total_partition_n)).items():
 
             train_data_list, test_data_list = get_train_test_data(data_src='local', data_path=data_path, delim=delim,
-            target_fields=target_fields, sampling_process='up', percentage=k/v, train_partition_n=int(k), test_partition_n=int(v-k))
-
-            # train_data_list, test_data_list = get_train_test_data(data_src='local', data_path=data_path, delim=delim,
-            # target_fields=target_fields, sampling_process='up', percentage=k/v, train_partition_n=1, test_partition_n=int(v-k))
+                                                                  target_fields=target_fields)
 
             sum_auc = 0.0
             for train_data in train_data_list:
@@ -217,4 +214,4 @@ if __name__ == '__main__':
     except:
         traceback.print_exc()
         pass
-    '''
+
