@@ -134,8 +134,13 @@ if __name__ == '__main__':
     # total_partition_n = [10.0]*9 + [x * 1.0 for x in range(2, 21)]
     # train_partition_n = [x*1.0 for x in range(1, 10)] + [x - 1.0 for x in [x * 1.0 for x in range(2, 21)]]
 
-    get_train_test_data(data_src=data_src, data_path=data_path, delim=delim,
-            target_fields=target_fields, sampling_process='up', percentage=0.7, train_partition_n=5, test_partition_n=1)
+    train_data_list, test_data_list = get_train_test_data(data_src=data_src, data_path=data_path, delim=delim,
+                                                          target_fields=target_fields, sampling_process='up',
+                                                          percentage=0.7, train_partition_n=5, test_partition_n=1)
+
+    print(len(train_data_list), len(test_data_list))
+    for line in train_data_list:
+        print(line.shape)
 
     '''
     try:

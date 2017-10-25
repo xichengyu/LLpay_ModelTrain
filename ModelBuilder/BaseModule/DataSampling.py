@@ -8,76 +8,62 @@ sys.path.append("../../Base/")
 from print_switch import prints
 
 
-def create_traindata(train_matrix, partition_n, sampling_process="up", multiple=None):
+def create_traindata(train_matrix, partition_n=1, sampling_process="up", multiple=None):
     shape_matrix = train_matrix.shape
     train_data = []
     try:
         for i in range(partition_n):
             tmp_data = train_matrix[shape_matrix[0]/partition_n * i:shape_matrix[0]/partition_n * (i+1), :]
+
+            good_sample = tmp_data[tmp_data[:, 0] == 0]
+            bad_sample = tmp_data[tmp_data[:, 0] == 1]
+
             if sampling_process == "up":
                 if multiple is None:
-                    remain_click = 1
+                    remain_bad = 0
                 else:
-                    remain_click = len_exp / (multiple * len_clc)
-                for i in range(remain_click):
-                    for k in tmp_exp:
-                        tmp_exp[k] += tmp_clc[k]
+                    remain_bad = int(float(good_sample.shape[0]) / (multiple * bad_sample.shape[0]) + 0.5) - 1
+                for j in range(remain_bad):
+                    tmp_data = np.stack((tmp_data, bad_sample))
             elif sampling_process == "down":
                 pass
             elif sampling_process is None:
                 pass
 
-            train_data.append(tmp_exp)
+            train_data.append(tmp_data)
     except:
         traceback.print_exc()
         pass
     return train_data
 
 
-def create_testdata(dic_exp, dic_clc, num=10000, partition_n=None):
-    test_data = []
+def create_testdata(test_matrix, num=10000, partition_n=1):
+    shape_matrix = test_matrix.shape
+    train_data = []
     try:
-        exp_len = len(dic_exp['timestamp']) if 'timestamp' in dic_exp else len(dic_exp['unixTime'])
-        clc_len = len(dic_clc['timestamp']) if 'timestamp' in dic_clc else len(dic_clc['unixTime'])
-        if partition_n is None:
-            partition_n = exp_len/num
-        else:
-            num = exp_len / partition_n
-        exp_shuffled_index = range(exp_len)
-        clc_shuffled_index = range(clc_len)
-        random.shuffle(exp_shuffled_index)
-        random.shuffle(clc_shuffled_index)
-
         for i in range(partition_n):
-            dic_both = {}
-            for k, v in dic_exp.items():
-                dic_both[k] = []
-                for index in exp_shuffled_index[i*num:(i+1)*num]:
-                    dic_both[k].append(v[index])
-            for k, v in dic_clc.items():
-                for index in clc_shuffled_index[i*clc_len/partition_n:(i+1)*clc_len/partition_n]:
-                    dic_both[k].append(v[index])
+            tmp_data = test_matrix[shape_matrix[0]/partition_n * i:shape_matrix[0]/partition_n * (i+1), :]
 
-            test_data.append(dic_both)
+            train_data.append(tmp_data)
     except:
         traceback.print_exc()
         pass
-    return test_data
+    return train_data
 
 
 def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
     shape_tuple = data_matrix.shape
-    train_data = np.array([[]])
-    test_data = np.array([[]])
+    train_data = []
+    test_data = []
     try:
         np.random.shuffle(data_matrix)
-        train_data = data_matrix[:num if train_percentile is None else int(shape_tuple[0] * train_percentile), :]
-        test_data = data_matrix[num if train_percentile is None else int(shape_tuple[0] * train_percentile):, :]
+        train_data_tmp = data_matrix[:num if train_percentile is None else int(shape_tuple[0] * train_percentile), :]
+        test_data_tmp = data_matrix[num if train_percentile is None else int(shape_tuple[0] * train_percentile):, :]
 
-        prints(train_data.shape, test_data.shape)
+        prints(train_data_tmp.shape, test_data_tmp.shape)
 
-        train_data = create_traindata(train_data, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
-        test_data = create_testdata(new_dic_exp, new_dic_clc, num=10000, partition_n=test_partition_n)
+        train_data = create_traindata(train_data_tmp, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
+        test_data = create_testdata(test_data_tmp, num=10000, partition_n=test_partition_n)
     except:
         traceback.print_exc()
         pass
