@@ -24,6 +24,7 @@ def create_traindata(train_matrix, partition_n=1, sampling_process="up", multipl
                 else:
                     remain_bad = int(float(good_sample.shape[0]) / (multiple * bad_sample.shape[0]) + 0.5) - 1
                 for j in range(remain_bad):
+                    prints(tmp_data.shape, bad_sample.shape)
                     tmp_data = np.stack((tmp_data, bad_sample))
             elif sampling_process == "down":
                 pass
@@ -51,7 +52,7 @@ def create_testdata(test_matrix, partition_n=1):
     return test_data
 
 
-def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
+def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, multiple=5,num=100000, train_percentile=None):
     shape_tuple = data_matrix.shape
     train_data = []
     test_data = []
@@ -62,7 +63,7 @@ def random_sampling(data_matrix, sampling_process, train_partition_n, test_parti
 
         prints(train_data_tmp.shape, test_data_tmp.shape)
 
-        train_data = create_traindata(train_data_tmp, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
+        train_data = create_traindata(train_data_tmp, partition_n=train_partition_n, sampling_process=sampling_process, multiple=multiple)
         test_data = create_testdata(test_data_tmp, partition_n=test_partition_n)
     except:
         traceback.print_exc()
