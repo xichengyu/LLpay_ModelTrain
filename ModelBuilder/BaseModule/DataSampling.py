@@ -75,7 +75,6 @@ def random_sampling(data_matrix, sampling_process, train_partition_n, test_parti
         selected_index = set(random.sample(range(shape_tuple[-1]), num if train_percentile is None else int(shape_tuple[0] * train_percentile)))
 
         for idx in range(shape_tuple[-1]):
-            prints(data_matrix[idx, :].shape)
             if idx in selected_index:
                 train_data = np.column_stack((train_data, data_matrix[:, idx]))
             else:
