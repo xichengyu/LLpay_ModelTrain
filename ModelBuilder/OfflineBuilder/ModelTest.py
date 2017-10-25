@@ -107,7 +107,7 @@ def get_train_test_data(data_src, data_path, delim, target_fields, sampling_proc
                                                        test_partition_n, train_percentile=percentage)
 
         elif data_src == "hive":
-            continue
+            pass
 
     except:
         traceback.print_exc()
