@@ -66,23 +66,23 @@ def create_testdata(dic_exp, dic_clc, num=10000, partition_n=None):
 
 
 def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
-    shape_tuple = data_matrix.shape
-    train_data = np.array([[]]*shape_tuple[-1]).T
-    test_data = np.array([[]]*shape_tuple[-1]).T
+    shape_tuple = data_matrix.T.shape
+    train_data = np.array([[]]*shape_tuple[0])
+    test_data = np.array([[]]*shape_tuple[0])
     prints(shape_tuple, train_data.shape, test_data.shape)
     try:
-        selected_index = set(random.sample(range(shape_tuple[0]), num if train_percentile is None else int(shape_tuple[0] * train_percentile)))
+        selected_index = set(random.sample(range(shape_tuple[-1]), num if train_percentile is None else int(shape_tuple[0] * train_percentile)))
 
-        for idx in range(shape_tuple[0]):
+        for idx in range(shape_tuple[-1]):
             prints(data_matrix[idx, :].shape)
             if idx in selected_index:
-                train_data = np.stack((train_data, data_matrix[idx, :]))
+                train_data = np.column_stack((train_data, data_matrix[:, idx]))
             else:
-                test_data = np.stack((test_data, data_matrix[idx, :]))
+                test_data = np.column_stack((test_data, data_matrix[:, idx]))
 
         prints(train_data.shape, test_data.shape)
 
-        train_data = create_traindata(train_data, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
+        train_data = create_traindata(train_data.T, partition_n=train_partition_n, sampling_process=sampling_process, multiple=5)
         test_data = create_testdata(new_dic_exp, new_dic_clc, num=10000, partition_n=test_partition_n)
     except:
         traceback.print_exc()
