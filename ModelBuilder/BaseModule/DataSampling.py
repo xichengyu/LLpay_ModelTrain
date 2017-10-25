@@ -66,7 +66,8 @@ def create_testdata(dic_exp, dic_clc, num=10000, partition_n=None):
 
 
 def random_sampling(data_matrix, sampling_process, train_partition_n, test_partition_n, num=100000, train_percentile=None):
-    shape_tuple = data_matrix.T.shape
+    data_matrix = data_matrix.T
+    shape_tuple = data_matrix.shape
     train_data = np.array([[]]*shape_tuple[0])
     test_data = np.array([[]]*shape_tuple[0])
     prints(shape_tuple, train_data.shape, test_data.shape)
