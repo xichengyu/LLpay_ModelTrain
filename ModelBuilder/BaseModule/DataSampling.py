@@ -76,9 +76,9 @@ def random_sampling(data_matrix, sampling_process, train_partition_n, test_parti
         for idx in range(shape_tuple[0]):
             prints(data_matrix[idx, :].shape)
             if idx in selected_index:
-                train_data = np.stack(train_data, data_matrix[idx, :])
+                train_data = np.stack((train_data, data_matrix[idx, :]))
             else:
-                test_data = np.stack(test_data, data_matrix[idx, :])
+                test_data = np.stack((test_data, data_matrix[idx, :]))
 
         prints(train_data.shape, test_data.shape)
 
