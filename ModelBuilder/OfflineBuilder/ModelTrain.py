@@ -17,7 +17,6 @@ from sklearn.decomposition import PCA
 # import json
 import traceback
 import LocalReceiver as lr
-import MongoReceiver
 import PreProcessing as pp
 import FeatureSelection as fs
 import ModelEvaluationTool as met
