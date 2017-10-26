@@ -47,4 +47,5 @@ def ROC(model, predict_y, target, thresholds=None, C=0.0, P=""):
 
 
 if __name__ == '__main__':
-    ROC('LR', joblib.load('predict_y'), joblib.load('target'))
+    thresholds = [x/100 for x in range(100)]
+    ROC('LR', joblib.load('../OfflineBuilder/predict_y'), joblib.load('../OfflineBuilder/target'), thresholds=thresholds)
