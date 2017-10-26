@@ -12,12 +12,11 @@ def ROC(model, predict_y, target, thresholds=None, C=0.0, P=""):
         thresholds = [0.50]
     joblib.dump(predict_y, 'predict_y')
     joblib.dump(target, 'target')
-    positive = 0
     threshold_ks = {}
     fout = open("model_result.log", "w")
     try:
         for threshold in thresholds:
-            TP, FN, FP, TN = 0, 0, 0, 0
+            TP, FN, FP, TN, positive = 0, 0, 0, 0, 0
             for i in range(len(target)):
                 positive += 1 if target[i] == 1 else 0
                 if threshold < predict_y[i]:
