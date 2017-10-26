@@ -145,7 +145,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             train_time = time.time()
             predict_y = rf.predict(train_data)
             # print set(predict_y)
-            # met.ROC("RF", predict_y, target)
+            met.ROC("RF", predict_y, target)
             joblib.dump(rf, "../../conf/rf_model.jm")
 
     except:
