@@ -3,6 +3,8 @@
 import sys
 sys.path.append("../BaseModule")
 sys.path.append("../../Base/DataReceiver")
+sys.path.append("../../Base/")
+from print_switch import prints
 from pandas import DataFrame
 # import numpy as np
 # from sklearn.feature_selection import SelectFromModel
@@ -101,6 +103,9 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
         data = dr_model.transform(data)
         # print "After: ", data
         '''
+
+        prints(train_data.shape, target.shape)
+
         if algorithm == "LR":
             # LinearRegression
             # lr = LogisticRegression(penalty='l1', C=0.1)

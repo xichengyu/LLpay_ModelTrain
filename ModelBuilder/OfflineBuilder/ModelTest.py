@@ -4,6 +4,8 @@ import sys
 from pandas import DataFrame
 sys.path.append('../BaseModule')
 sys.path.append("../../Base/DataReceiver")
+sys.path.append("../../Base/")
+from print_switch import prints
 import PreProcessing as pp
 import FeatureSelection as fs
 import DataSampling as ds
