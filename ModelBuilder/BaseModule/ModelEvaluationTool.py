@@ -31,7 +31,7 @@ def ROC(model, predict_y, target, thresholds=None, C=0.0, P=""):
                     else:
                         FN += 1
             KS_Value = (float(TP) / positive if positive != 0 else 0) - (float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0)
-            fout.write("Model=%s P=%s C=%f TP=%d TN=%d FP=%d FN=%d threshold=%f Positive=%d\n Negative=%d Accuracy=%.4f"
+            fout.write("Model=%s P=%s C=%f TP=%d TN=%d FP=%d FN=%d threshold=%f Positive=%d Negative=%d Accuracy=%.4f"
                        " precision=%.4f TPR(recall)=%.4f FPR=%.4f KS_Value=%.4f\n" % \
                   (model, P, C, TP, TN, FP, FN, threshold, positive, len(target) - positive, float(TP + TN) / len(target),
                    float(TP)/(TP+FP) if TP+FP != 0 else 0,
