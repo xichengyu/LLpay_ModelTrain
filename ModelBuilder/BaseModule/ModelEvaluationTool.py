@@ -15,7 +15,7 @@ def ROC(model, predict_y, target, thresholds=None, C=0.0, P=""):
     TP, FN, FP, TN = 0, 0, 0, 0
     positive = 0
     threshold_ks = {}
-    fout = open("model_result.log")
+    fout = open("model_result.log", "w")
     try:
         for threshold in thresholds:
             for i in range(len(target)):
