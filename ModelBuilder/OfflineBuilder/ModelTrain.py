@@ -139,7 +139,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
 
         elif algorithm == "RF":
             # RandomForest
-            rf=RandomForestRegressor()
+            rf=RandomForestRegressor(n_estimators=60, max_depth=10)
             # rf = RandomForestClassifier(n_estimators=100)
             rf.fit(train_data, target)
             train_time = time.time()

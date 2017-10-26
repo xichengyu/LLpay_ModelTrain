@@ -19,7 +19,7 @@ import traceback
 import ModelTrain
 # from matplotlib import pylab as plb
 import numpy as np
-from LocalReceiver import load_local_data
+import LocalReceiver as lr
 
 
 data_src = 'local'
@@ -103,7 +103,7 @@ def get_train_test_data(data_src, data_path, delim, target_fields):
         if data_src == "local":
             print("getting Original data...")
 
-            raw_data = load_local_data(data_path)  # get original data
+            raw_data = lr.load_local_data(data_path)  # get original data
 
             print(DataFrame(raw_data))
 
