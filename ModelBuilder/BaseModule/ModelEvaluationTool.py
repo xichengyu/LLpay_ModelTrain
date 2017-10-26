@@ -26,13 +26,12 @@ def ROC(model, predict_y, target, threshold=0.5, C=0.0, P=""):
                 else:
                     FN += 1
         print("Model=%s P=%s C=%f TP=%d TN=%d FP=%d FN=%d Positive=%d\n Negative=%d Accuracy=%.4f precision=%.4f " \
-              "TPR(sensitivity, recall)=%.4f FPR(1-specificity)=%.4f TNR=%.4f FNR=%.4f" % \
+              "TPR(recall)=%.4f FPR=%.4f KS_Value=%.4f" % \
               (model, P, C, TP, TN, FP, FN, positive, len(target) - positive, float(TP + TN) / len(target),
                float(TP)/(TP+FP) if TP+FP != 0 else 0,
                float(TP) / positive if positive != 0 else 0,
                float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
-               float(TN) / (len(target) - positive) if len(target) - positive != 0 else 0,
-               float(FN)/positive if positive != 0 else 0))
+               float(TP) / (TP + FP) if TP + FP != 0 else 0 - float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0))
     except:
         traceback.print_exc()
         pass
