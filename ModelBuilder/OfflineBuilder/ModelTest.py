@@ -206,7 +206,9 @@ if __name__ == '__main__':
                         '''
                         predict_y = model.predict(test_data)
 
-                        met.ROC(algorithm, predict_y, target)
+                        thresholds = [x/100 for x in range(100)]
+
+                        met.ROC(algorithm, predict_y, target, thresholds=thresholds)
                         fpr, tpr, thresholds = roc_curve(target, predict_y)
                         # plb.plot(fpr, tpr)
                         # print fpr, tpr, thresholds
