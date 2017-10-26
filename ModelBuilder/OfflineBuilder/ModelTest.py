@@ -109,8 +109,8 @@ def get_train_test_data(data_src, data_path, delim, target_fields):
 
             '''create train_data, test_data'''
             randsamp = ds.RandSamp()
-            randsamp.MULTIPLE = 2
-            randsamp.TRAIN_PERCENTILE = 0.8
+            randsamp.MULTIPLE = 1
+            randsamp.TRAIN_PERCENTILE = 0.7
             train_data, test_data = randsamp.random_sampling(raw_data)
 
         elif data_src == "hive":
