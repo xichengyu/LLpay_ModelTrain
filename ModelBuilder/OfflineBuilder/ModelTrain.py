@@ -37,7 +37,7 @@ area_delim = ","
 
 def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True, y_idx=0):
     try:
-        joblib.dump(train_data[y_idx, :], "../../data/target.dt")
+        joblib.dump(train_data[:, y_idx], "../../data/target.dt")
 
         train_data = np.delete(train_data, y_idx, axis=1)
 
