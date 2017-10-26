@@ -31,7 +31,7 @@ def ROC(model, predict_y, target, threshold=0.5, C=0.0, P=""):
                float(TP)/(TP+FP) if TP+FP != 0 else 0,
                float(TP) / positive if positive != 0 else 0,
                float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
-               float(TP) / positive if positive != 0 else 0 - float(TP) / (TP + FP) if TP + FP != 0 else 0 - float(FP)/(len(target))))
+               float(TP) / positive if positive != 0 else 0 - float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0))
     except:
         traceback.print_exc()
         pass
