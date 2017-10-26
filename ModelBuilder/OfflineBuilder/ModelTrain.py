@@ -32,43 +32,6 @@ dum_coding_fields = ["unixTime", "networkMode", "mobileOs", "appMediaCat"]
 delim = ";"
 area_delim = ","
 
-''''normalize dict data'''
-
-
-def norm_data(dic):
-    try:
-        dic_lu = {}
-        for k, v in dic.items():
-            if k == "unixTime":
-                res = pp.MaxMin(pp.Str2Int(dic[k]))
-                dic[k] = res[0]
-                dic_lu[k] = res[1]
-            elif k == "area":  # areacode transform to real area name?
-                tmp = pp.SplitArea(dic[k], area_delim)
-                res = pp.MaxMin(pp.Str2Int(tmp[0]))
-                dic['area_prov'] = res[0]
-                dic_lu['area_prov'] = res[1]
-                res = pp.MaxMin(pp.Str2Int(tmp[1]))
-                dic['area_city'] = res[0]
-                dic_lu['area_city'] = res[1]
-                res = pp.MaxMin(pp.Str2Md5(dic['area']))
-                dic['area'] = res[0]
-                dic_lu['area'] = res[1]
-            else:
-                try:
-                    float(dic[k][0])
-                    res = pp.MaxMin(pp.Str2Int(dic[k]))
-                    dic[k] = res[0]
-                    dic_lu[k] = res[1]
-                except:
-                    res = pp.MaxMin(pp.Str2Md5(dic[k]))
-                    dic[k] = res[0]
-                    dic_lu[k] = res[1]
-                    continue
-        return dic, dic_lu
-    except:
-        raise ValueError
-
 
 def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True, y_idx=0):
     try:
@@ -88,17 +51,12 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             print ('\033[0m')
             # dic = pp.DummyCoding(dic, dum_coding_fields)
             # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
-            dic_norm = norm_data(train_data)
-            joblib.dump(dic_norm[1], "../../conf/feature_value_bounds.cf")
-            data = DataFrame(dic_norm[0])
-            # print data
-            norm_time = time.time()
 
             '''merge features'''
             print ('\033[1;35;40m')
             print("Merging DataFrame...")
             print ('\033[0m')
-            data = fs.VarSelection(data)
+            data = fs.VarSelection(train_data)
             data = data.sort_index(axis=1, ascending=True)
             merge_res = fs.__mergefeature(data)
             data = merge_res[0]  # merge factors
@@ -115,21 +73,14 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             select_time = time.time()
 
         else:
-            '''dummy coding & normalization'''
-            print ('\033[1;35;40m')
-            print("Normalizing data...")
-            print ('\033[0m')
-            dic_norm = norm_data(dic)
-            joblib.dump(dic_norm[1], "../../conf/feature_value_bounds.cf")
-            data = DataFrame(dic_norm[0])
+            pass
 
-        target = data['clicked']
-        data = data.drop('clicked', axis=1)
+        target = joblib.load("../../data/target.dt")
 
         # data=DataFrame(SelectFromModel(LogisticRegression(penalty="l1", C=0.1)).fit_transform(data, target))
         # data=DataFrame(SelectFromModel(LinearRegression()).fit_transform(data, target))
 
-        '''sort data in ascending order'''
+        '''sort data in ascending order
         print ('\033[1;35;40m')
         print("Sort data...")
         print ('\033[0m')
@@ -137,7 +88,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
         # print data
         joblib.dump(data.columns, "../../conf/keys.cf")
         sort_time = time.time()
-
+        '''
         '''Dimensionality Reduction
         print ('\033[1;35;40m')
         print "Dimensionality reduction..."
@@ -174,9 +125,9 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             # GBDT
             gbdt = GradientBoostingRegressor()
             # gbdt = GradientBoostingClassifier()
-            gbdt.fit(data, target)
+            gbdt.fit(train_data, target)
             train_time = time.time()
-            predict_y=gbdt.predict(data)
+            predict_y=gbdt.predict(train_data)
             # print set(predict_y)
             met.ROC("GBDT", predict_y, target)
             joblib.dump(gbdt, "../../conf/gbdt_model.jm")
@@ -185,19 +136,12 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             # RandomForest
             rf=RandomForestRegressor()
             # rf = RandomForestClassifier(n_estimators=100)
-            rf.fit(data, target)
+            rf.fit(train_data, target)
             train_time = time.time()
-            predict_y = rf.predict(data)
+            predict_y = rf.predict(train_data)
             # print set(predict_y)
             met.ROC("RF", predict_y, target)
             joblib.dump(rf, "../../conf/rf_model.jm")
-
-        print('norm_cost: ', norm_time - st_time)
-        print('merge_cost: ', merge_time - norm_time)
-        print('select_cost: ', select_time - merge_time)
-        print('sort_cost: ', sort_time - select_time)
-        print('train_cost: ', train_time - sort_time)
-        print('total_cost: ', train_time - st_time)
 
     except:
         traceback.print_exc()

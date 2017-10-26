@@ -7,6 +7,7 @@ sys.path.append("../../Base/DataReceiver")
 import PreProcessing as pp
 import FeatureSelection as fs
 import DataSampling as ds
+import ModelEvaluationTool as met
 from sklearn.externals import joblib
 from sklearn.metrics import auc
 from sklearn.metrics import roc_auc_score
@@ -119,11 +120,11 @@ def get_train_test_data(data_src, data_path, delim, target_fields):
 
 if __name__ == '__main__':
 
-    preprocessing_flag = True
+    preprocessing_flag = False
 
     data_path = "../../data/raw_data.dt"
 
-    algorithm = "GBDT"      # RF, GBDT, LR
+    algorithm = "RF"      # RF, GBDT, LR
 
     total_partition_n = [1]
     train_partition_n = [1]
@@ -156,20 +157,21 @@ if __name__ == '__main__':
                     ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
 
                 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
+                '''
                 keys = joblib.load("../../conf/keys.cf")
                 bounds = joblib.load("../../conf/feature_value_bounds.cf")
                 merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
-                model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
                 dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
                 dr_model = joblib.load('../../conf/dr_model.cf')
                 input_test_features = [x for x in keys if x.find('_') == -1]
                 print(input_test_features)
+                '''
+                model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
 
                 target = []
 
                 if 0:
-
+                    '''
                     test_data = joblib.load("../../conf/test_data.dt")
                     target = [float(x) for x in joblib.load("../../conf/target.dt")]
 
@@ -184,18 +186,20 @@ if __name__ == '__main__':
                     fpr, tpr, thresholds = roc_curve(target, predict_y)
                     print(fpr, tpr, thresholds)
                     print(roc_auc_score(target, predict_y))
-
+                    '''
+                    pass
                 else:
-                    for origin_test_data in test_data_list:
-                        target = map(float, origin_test_data['clicked'])
-                        test_data = origin_test_data.copy()
-                        test_keys = test_data.keys()
+                    for test_data in test_data_list:
+                        target = test_data[:, 0]
+                        test_data = np.delete(test_data, 0, axis=1)
+                        '''
                         for k in test_keys:
                             test_data.pop(k) if k not in input_test_features else test_data
 
                         test_json = json.JSONEncoder().encode(test_data)
                         test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
                         # test_data = dr_model.transform(np.array(test_data))
+                        '''
                         predict_y = model.predict(test_data)
 
                         met.ROC(algorithm, predict_y, target)
@@ -207,9 +211,6 @@ if __name__ == '__main__':
                         sum_auc += auc(fpr, tpr)
                     # plb.savefig('%s' % algorithm)
 
-            print('train_data: %d %d test_data: %d %d avg_auc: %f' % \
-                      (len(train_data_list), len(train_data_list[0]['unixTime']), len(test_data_list),
-                       len(test_data_list[0]['unixTime']), (sum_auc/len(train_data_list)/len(test_data_list))))
 
     except:
         traceback.print_exc()
