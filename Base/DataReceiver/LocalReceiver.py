@@ -35,21 +35,14 @@ def read_local_data(localpath, default=-1.0):
     return res
 
 
-def load_local_data(localpath, default=-1.0):
+def load_local_data(localpath):
     """
     load joblib format data from loacal place
     :param localpath:
-    :param default:
     :return:
     """
     res = np.array(joblib.load(localpath))
 
-    # res[np.isnan(res)] = default            # preprocessing.Imputer
-
-    impute = Imputer(strategy='median')
-    res = impute.fit_transform(res)
-
-    prints(res[0])
     return res
 
 
