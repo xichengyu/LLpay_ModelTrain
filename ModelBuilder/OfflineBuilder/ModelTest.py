@@ -97,25 +97,16 @@ def normalize_input_data(json_fmt, keys, bounds, merge_bounds, dum_coding_fields
     return DataFrame(dic)
 
 
-def get_train_test_data(data_src, data_path, delim, target_fields):
+def get_train_test_data(data, target_fields):
     train_data = []
     test_data = []
     try:
-        if data_src == "local":
-            print("getting Original data...")
-
-            raw_data = lr.load_local_data(data_path)  # get original data
-
-            print(DataFrame(raw_data))
-
-            '''create train_data, test_data'''
-            randsamp = ds.RandSamp()
-            randsamp.MULTIPLE = 1
-            randsamp.TRAIN_PERCENTILE = 0.7
-            train_data, test_data = randsamp.random_sampling(raw_data)
-
-        elif data_src == "hive":
-            pass
+        print(DataFrame(data))
+        '''create train_data, test_data'''
+        randsamp = ds.RandSamp()
+        randsamp.MULTIPLE = 1
+        randsamp.TRAIN_PERCENTILE = 0.7
+        train_data, test_data = randsamp.random_sampling(raw_data)
 
     except:
         traceback.print_exc()
@@ -126,97 +117,90 @@ def get_train_test_data(data_src, data_path, delim, target_fields):
 if __name__ == '__main__':
 
     preprocessing_flag = False
+    algorithm = "RF"      # RF, GBDT, LR
+
+    prints("Getting Raw Data...")
 
     data_path = "../../data/raw_data.dt"
+    raw_data = lr.load_local_data(data_path)  # get original data
 
-    algorithm = "RF"      # RF, GBDT, LR
+    strategies = ["mean", "median", "most_frequent", -1]    # different strategies for dealing with missing value
 
     total_partition_n = [1]
     train_partition_n = [1]
 
-    # total_partition_n = [x * 1.0 for x in range(2, 21)]
-    # train_partition_n = [x - 1.0 for x in total_partition_n]
-
-    # total_partition_n = [10.0]*9 + [x * 1.0 for x in range(2, 21)]
-    # train_partition_n = [x*1.0 for x in range(1, 10)] + [x - 1.0 for x in [x * 1.0 for x in range(2, 21)]]
-    '''
-    train_data_list, test_data_list = get_train_test_data(data_src=data_src, data_path=data_path, delim=delim,
-                                                          target_fields=target_fields, sampling_process='up',
-                                                          percentage=0.7, train_partition_n=5, test_partition_n=1)
-
-    print(len(train_data_list), len(test_data_list))
-    for line in train_data_list:
-        print(line.shape)
-
-    '''
     try:
-        for k, v in dict(zip(train_partition_n, total_partition_n)).items():
+        prints("Dealing Missing Value...")
+        for strategy in strategies:
+            new_data = mvs.fill_strategy(raw_data, strategy)
 
-            train_data_list, test_data_list = get_train_test_data(data_src='local', data_path=data_path, delim=delim,
-                                                                  target_fields=target_fields)
+            for k, v in dict(zip(train_partition_n, total_partition_n)).items():
 
-            sum_auc = 0.0
-            for train_data in train_data_list:
+                train_data_list, test_data_list = get_train_test_data(data=new_data,
+                                                                      target_fields=target_fields)
 
-                if 1:
-                    ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
+                sum_auc = 0.0
+                for train_data in train_data_list:
 
-                ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-                '''
-                keys = joblib.load("../../conf/keys.cf")
-                bounds = joblib.load("../../conf/feature_value_bounds.cf")
-                merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
-                dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
-                dr_model = joblib.load('../../conf/dr_model.cf')
-                input_test_features = [x for x in keys if x.find('_') == -1]
-                print(input_test_features)
-                '''
-                model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
+                    if 1:
+                        ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
 
-                target = []
-
-                if 0:
+                    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                     '''
-                    test_data = joblib.load("../../conf/test_data.dt")
-                    target = [float(x) for x in joblib.load("../../conf/target.dt")]
-
-                    test_keys = test_data.keys()
-                    for k in test_keys:
-                        test_data.pop(k) if k not in input_test_features else test_data
-                    test_json = json.JSONEncoder().encode(test_data)
-                    test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                    predict_y = model.predict(test_data)
-
-                    met.ROC(algorithm, predict_y, target)
-                    fpr, tpr, thresholds = roc_curve(target, predict_y)
-                    print(fpr, tpr, thresholds)
-                    print(roc_auc_score(target, predict_y))
+                    keys = joblib.load("../../conf/keys.cf")
+                    bounds = joblib.load("../../conf/feature_value_bounds.cf")
+                    merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
+                    dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
+                    dr_model = joblib.load('../../conf/dr_model.cf')
+                    input_test_features = [x for x in keys if x.find('_') == -1]
+                    print(input_test_features)
                     '''
-                    pass
-                else:
-                    for test_data in test_data_list:
-                        target = test_data[:, 0]
-                        test_data = np.delete(test_data, 0, axis=1)
+                    model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
+
+                    target = []
+
+                    if 0:
                         '''
+                        test_data = joblib.load("../../conf/test_data.dt")
+                        target = [float(x) for x in joblib.load("../../conf/target.dt")]
+    
+                        test_keys = test_data.keys()
                         for k in test_keys:
                             test_data.pop(k) if k not in input_test_features else test_data
-
                         test_json = json.JSONEncoder().encode(test_data)
                         test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                        # test_data = dr_model.transform(np.array(test_data))
-                        '''
                         predict_y = model.predict(test_data)
-
-                        thresholds = [x/100 for x in range(100)]
-
-                        met.ROC(algorithm, predict_y, target, thresholds=thresholds)
+    
+                        met.ROC(algorithm, predict_y, target)
                         fpr, tpr, thresholds = roc_curve(target, predict_y)
-                        # plb.plot(fpr, tpr)
-                        # print fpr, tpr, thresholds
-                        print('roc_auc_score: ', roc_auc_score(target, predict_y))
-                        print ('auc: ', auc(fpr, tpr))
-                        sum_auc += auc(fpr, tpr)
-                    # plb.savefig('%s' % algorithm)
+                        print(fpr, tpr, thresholds)
+                        print(roc_auc_score(target, predict_y))
+                        '''
+                        pass
+                    else:
+                        for test_data in test_data_list:
+                            target = test_data[:, 0]
+                            test_data = np.delete(test_data, 0, axis=1)
+                            '''
+                            for k in test_keys:
+                                test_data.pop(k) if k not in input_test_features else test_data
+    
+                            test_json = json.JSONEncoder().encode(test_data)
+                            test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
+                            # test_data = dr_model.transform(np.array(test_data))
+                            '''
+                            predict_y = model.predict(test_data)
+
+                            thresholds = [x/100 for x in range(100)]
+
+                            met.ROC(algorithm, strategy, predict_y, target, thresholds=thresholds)
+                            fpr, tpr, thresholds = roc_curve(target, predict_y)
+                            # plb.plot(fpr, tpr)
+                            # print fpr, tpr, thresholds
+                            print('roc_auc_score: ', roc_auc_score(target, predict_y))
+                            print ('auc: ', auc(fpr, tpr))
+                            sum_auc += auc(fpr, tpr)
+                        # plb.savefig('%s' % algorithm)
 
 
     except:
