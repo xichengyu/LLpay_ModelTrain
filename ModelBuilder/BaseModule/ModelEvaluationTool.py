@@ -13,7 +13,7 @@ def ROC(model, strategy, predict_y, target, thresholds=None, C=0.0, P=""):
     joblib.dump(predict_y, 'predict_y')
     joblib.dump(target, 'target')
     threshold_ks = {}
-    fout = open("model_result.log", "w+")
+    fout = open("model_result.log", "a")
     try:
         for threshold in thresholds:
             TP, FN, FP, TN, positive = 0, 0, 0, 0, 0
@@ -40,7 +40,7 @@ def ROC(model, strategy, predict_y, target, thresholds=None, C=0.0, P=""):
                         float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
                         KS_Value))
             threshold_ks[threshold] = KS_Value
-        fout.write(str(sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True)))
+        fout.write(str(sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True))+"\n")
         fout.close()
     except:
         traceback.print_exc()

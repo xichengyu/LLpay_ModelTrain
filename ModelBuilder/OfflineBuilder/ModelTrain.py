@@ -123,7 +123,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                     train_time = time.time()
                     predict_y=lr.predict(data)
                     # print set(predict_y)
-                    met.ROC("LR", predict_y, target, c, p)
+                    # met.ROC("LR", predict_y, target, c, p)
                     joblib.dump(lr, "../../conf/lr_model.jm")
 
         elif algorithm == "GBDT":
@@ -134,7 +134,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             train_time = time.time()
             predict_y=gbdt.predict(train_data)
             # print set(predict_y)
-            met.ROC("GBDT", predict_y, target)
+            # met.ROC("GBDT", predict_y, target)
             joblib.dump(gbdt, "../../conf/gbdt_model.jm")
 
         elif algorithm == "RF":
@@ -145,7 +145,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             train_time = time.time()
             predict_y = rf.predict(train_data)
             # print set(predict_y)
-            met.ROC("RF", predict_y, target)
+            # met.ROC("RF", predict_y, target)
             joblib.dump(rf, "../../conf/rf_model.jm")
 
     except:
