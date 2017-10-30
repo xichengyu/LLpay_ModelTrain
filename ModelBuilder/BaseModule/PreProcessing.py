@@ -70,15 +70,19 @@ def Str2Md5(lis):  # tansform str to int
 '''max_min normalization method'''
 
 
-def MaxMin(lis):  # normalization: max_min method
-    tmp = np.array(lis).astype(np.float)
-    upper = max(tmp)
-    lower = min(tmp)
-    if upper != lower:
-        tmp = (tmp - lower) / (upper - lower)
-    elif upper != 0:
-        tmp /= upper
-    return tmp, [lower, upper]
+def max_min(nparray_data):  # normalization: max_min method
+    lower_upper_list = []
+    for idx in range(nparray_data.shape[-1]):
+        tmp = nparray_data[:, idx]
+        upper = max(tmp)
+        lower = min(tmp)
+        if upper != lower:
+            tmp = (tmp - lower) / (upper - lower)
+        elif upper != 0:
+            tmp /= upper
+        nparray_data[:, idx] = tmp
+        lower_upper_list.append((lower, upper))
+    return nparray_data, lower_upper_list
 
 
 '''dummy coding'''
