@@ -101,12 +101,11 @@ def get_train_test_data(data, target_fields):
     train_data = []
     test_data = []
     try:
-        print(DataFrame(data))
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
         randsamp.TRAIN_PERCENTILE = 0.7
-        train_data, test_data = randsamp.random_sampling(raw_data)
+        train_data, test_data = randsamp.random_sampling(data)
 
     except:
         traceback.print_exc()
@@ -133,6 +132,8 @@ if __name__ == '__main__':
         prints("Dealing Missing Value...")
         for strategy in strategies:
             new_data = mvs.fill_strategy(raw_data, strategy)
+
+            prints(DataFrame(new_data))
 
             for k, v in dict(zip(train_partition_n, total_partition_n)).items():
 
