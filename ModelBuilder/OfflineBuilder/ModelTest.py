@@ -123,8 +123,7 @@ if __name__ == '__main__':
     data_path = "../../data/raw_data.dt"
     raw_data = lr.load_local_data(data_path)  # get original data
 
-    # strategies = ["mean", "median", "most_frequent", -1]    # different strategies for dealing with missing value
-    strategies = [-1]    # different strategies for dealing with missing value
+    strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
 
     total_partition_n = [1]
     train_partition_n = [1]
