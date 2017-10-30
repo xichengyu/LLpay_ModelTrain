@@ -5,6 +5,7 @@ import traceback
 
 
 def fill_strategy(raw_data, strategy):
+    print(raw_data.shape)
     try:
         if isinstance(strategy, str):
             impute = Imputer(strategy=strategy)
@@ -14,4 +15,5 @@ def fill_strategy(raw_data, strategy):
     except ValueError:
         traceback.print_exc()
         raise ValueError
+    print(new_data.shape)
     return new_data
