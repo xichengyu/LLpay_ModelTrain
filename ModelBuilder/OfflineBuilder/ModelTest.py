@@ -115,7 +115,7 @@ def get_train_test_data(data, target_fields):
 
 if __name__ == '__main__':
 
-    preprocessing_flag = False
+    preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
 
     prints("Getting Raw Data...")

@@ -48,13 +48,15 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
         if if_preprocessing:
             '''dummy coding & normalization'''
             st_time = time.time()
-            print ('\033[1;35;40m')
+            print('\033[1;35;40m')
             print("Normalizing data...")
-            print ('\033[0m')
+            print('\033[0m')
+            train_data = pp.max_min(train_data)
             # dic = pp.DummyCoding(dic, dum_coding_fields)
             # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
 
-            '''merge features'''
+            '''
+            # merge features
             print ('\033[1;35;40m')
             print("Merging DataFrame...")
             print ('\033[0m')
@@ -66,13 +68,14 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             # print data
             merge_time = time.time()
 
-            '''select features'''
+            # select features
             print ('\033[1;35;40m')
             print("selecting Features...")
             print ('\033[0m')
             data = fs.__selectfeature(data)
             # print data
             select_time = time.time()
+            '''
 
         else:
             pass
