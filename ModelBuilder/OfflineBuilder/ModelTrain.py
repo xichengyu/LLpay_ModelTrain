@@ -25,7 +25,7 @@ import ModelEvaluationTool as met
 import DataSampling as ds
 import time
 import numpy as np
-import ImformationValue as iv
+import InformationValue as iv
 
 
 data_path = "../../data/126.csv"
