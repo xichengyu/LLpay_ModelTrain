@@ -119,7 +119,8 @@ if __name__ == '__main__':
     conf_info = get_conf_info()
     preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
-    strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
+    # strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
+    strategies = ["median"]
     run_times = 1
 
     total_partition_n = [1]
