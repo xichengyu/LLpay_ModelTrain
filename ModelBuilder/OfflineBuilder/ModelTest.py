@@ -120,7 +120,7 @@ if __name__ == '__main__':
     preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
     strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
-    run_times = 20
+    run_times = 10
 
     total_partition_n = [1]
     train_partition_n = [1]
