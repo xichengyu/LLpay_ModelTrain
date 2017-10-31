@@ -3,3 +3,15 @@ table = dbmodel.data_xicy_fullstep_sample
 raw_data = ../../data/raw_data.dt
 
 column_name = ../../conf/column_name.txt
+
+# RF, GBDT, LR
+algorithm = RF
+
+# missing value strategy
+strategies = ["mean", "median", "most_frequent"]
+
+times_n = 20
+
+
+
+

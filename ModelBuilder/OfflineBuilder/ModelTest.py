@@ -21,6 +21,7 @@ import ModelTrain
 # from matplotlib import pylab as plb
 import numpy as np
 import LocalReceiver as lr
+from read_cnf import get_conf_info
 
 
 data_src = 'local'
@@ -115,21 +116,20 @@ def get_train_test_data(data, target_fields):
 
 if __name__ == '__main__':
 
+    conf_info = get_conf_info()
     preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
-
-    prints("Getting Raw Data...")
-
-    data_path = "../../data/raw_data.dt"
-    raw_data = lr.load_local_data(data_path)  # get original data
-
     strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
+    run_times = 1
 
     total_partition_n = [1]
     train_partition_n = [1]
 
+    prints("Getting Raw Data...")
+    raw_data = lr.load_local_data(conf_info["raw_data"])  # get original data
+
     try:
-        for i in range(20):
+        for i in range(run_times):
             prints("Dealing Missing Value...")
             for strategy in strategies:
                 new_data = mvs.fill_strategy(raw_data, strategy)

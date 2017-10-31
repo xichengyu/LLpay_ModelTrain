@@ -40,7 +40,7 @@ def ROC(model, strategy, predict_y, target, thresholds=None, C=0.0, P=""):
                         float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
                         KS_Value))
             threshold_ks[threshold] = KS_Value
-        fout.write(str(sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True))+"\n")
+        fout.write(strategy+str(sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True))+"\n")
         fout.close()
     except:
         traceback.print_exc()
