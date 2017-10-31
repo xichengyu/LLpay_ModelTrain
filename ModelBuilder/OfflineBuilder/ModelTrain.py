@@ -25,6 +25,7 @@ import ModelEvaluationTool as met
 import DataSampling as ds
 import time
 import numpy as np
+import ImformationValue as iv
 
 
 data_path = "../../data/126.csv"
@@ -46,7 +47,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
         '''unixtime to hour'''
 
         if if_preprocessing:
-            '''dummy coding & normalization'''
+            # dummy coding & normalization
             if 0:
                 print('\033[1;35;40m')
                 print("Normalizing data...")
@@ -56,6 +57,10 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 # dic = pp.DummyCoding(dic, dum_coding_fields)
                 # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
 
+            if 1:
+                woe = iv.WOE()
+                woe.WOE_N = 100
+                train_data = woe.feature_discretion(train_data)
             '''
             # merge features
             print ('\033[1;35;40m')
