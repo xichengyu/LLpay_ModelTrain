@@ -128,9 +128,9 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 for p in Penalty:
                     lr = LogisticRegression(penalty=p, C=c)
                     # lr = LinearRegression()
-                    lr.fit(data, target)
+                    lr.fit(train_data, target)
                     train_time = time.time()
-                    predict_y=lr.predict(data)
+                    predict_y=lr.predict(train_data)
                     # print set(predict_y)
                     # met.ROC("LR", predict_y, target, c, p)
                     joblib.dump(lr, "../../conf/lr_model.jm")
