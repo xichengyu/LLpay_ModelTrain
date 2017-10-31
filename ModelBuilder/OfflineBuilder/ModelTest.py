@@ -120,7 +120,7 @@ if __name__ == '__main__':
     preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
     strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
-    run_times = 1
+    run_times = 20
 
     total_partition_n = [1]
     train_partition_n = [1]
@@ -146,6 +146,7 @@ if __name__ == '__main__':
                     for train_data in train_data_list:
 
                         if 1:
+                            prints("Training Model...")
                             ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
 
                         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -181,6 +182,7 @@ if __name__ == '__main__':
                             '''
                             pass
                         else:
+                            prints("Testing Model...")
                             for test_data in test_data_list:
                                 target = test_data[:, 0]
                                 test_data = np.delete(test_data, 0, axis=1)
