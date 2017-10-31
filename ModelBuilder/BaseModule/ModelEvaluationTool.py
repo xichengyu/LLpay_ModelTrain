@@ -7,13 +7,13 @@ from sklearn.externals import joblib
 '''ROC'''
 
 
-def ROC(model, strategy, predict_y, target, thresholds=None, C=0.0, P=""):
+def ROC(model, strategy, predict_y, target, log_path, thresholds=None, C=0.0, P=""):
     if thresholds is None:
         thresholds = [0.50]
     joblib.dump(predict_y, 'predict_y')
     joblib.dump(target, 'target')
     threshold_ks = {}
-    fout = open("model_result.log", "a")
+    fout = open(log_path, "a")
     try:
         for threshold in thresholds:
             TP, FN, FP, TN, positive = 0, 0, 0, 0, 0
@@ -40,7 +40,8 @@ def ROC(model, strategy, predict_y, target, thresholds=None, C=0.0, P=""):
                         float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
                         KS_Value))
             threshold_ks[threshold] = KS_Value
-        fout.write(strategy+str(sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True))+"\n")
+        threshold_ks = sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True)
+        fout.write(strategy+str(threshold_ks)+"\n")
         fout.close()
     except:
         traceback.print_exc()

@@ -129,19 +129,17 @@ if __name__ == '__main__':
     raw_data = lr.load_local_data(conf_info["raw_data"])  # get original data
 
     try:
-        for i in range(run_times):
-            prints("Dealing Missing Value...")
-            for strategy in strategies:
-                new_data = mvs.fill_strategy(raw_data, strategy)
+        prints("Dealing Missing Value...")
+        for strategy in strategies:
+            new_data = mvs.fill_strategy(raw_data, strategy)
 
-                prints(DataFrame(new_data))
+            prints(DataFrame(new_data))
 
-                for k, v in dict(zip(train_partition_n, total_partition_n)).items():
-
-                    train_data_list, test_data_list = get_train_test_data(data=new_data,
-                                                                          target_fields=target_fields)
-
+            for k, v in dict(zip(train_partition_n, total_partition_n)).items():
+                for i in range(run_times):
+                    train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
                     sum_auc = 0.0
+                    n = 0
                     for train_data in train_data_list:
 
                         if 1:
@@ -195,14 +193,19 @@ if __name__ == '__main__':
 
                                 thresholds = [x/100 for x in range(100)]
 
-                                met.ROC(algorithm, strategy, predict_y, target, thresholds=thresholds)
+                                met.ROC(algorithm, strategy, predict_y, target, conf_info["log_path"], thresholds=thresholds)
                                 fpr, tpr, thresholds = roc_curve(target, predict_y)
                                 # plb.plot(fpr, tpr)
                                 # print fpr, tpr, thresholds
-                                print('roc_auc_score: ', roc_auc_score(target, predict_y))
-                                print ('auc: ', auc(fpr, tpr))
+                                prints('roc_auc_score: ', roc_auc_score(target, predict_y))
+                                prints('auc: ', auc(fpr, tpr))
                                 sum_auc += auc(fpr, tpr)
-                            # plb.savefig('%s' % algorithm)
+                                n += 1
+                                # plb.savefig('%s' % algorithm)
+                    fout = open(conf_info["log_path"], "a")
+                    fout.write("avg_auc: "+str(sum_auc/n)+"\n")
+                    fout.close()
+                    prints(sum_auc/n)
 
 
     except:

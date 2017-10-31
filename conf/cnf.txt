@@ -4,6 +4,8 @@ raw_data = ../../data/raw_data.dt
 
 column_name = ../../conf/column_name.txt
 
+log_path = model_result.log
+
 # RF, GBDT, LR
 algorithm = RF
 
