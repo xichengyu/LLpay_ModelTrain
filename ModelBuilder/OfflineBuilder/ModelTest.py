@@ -203,7 +203,7 @@ if __name__ == '__main__':
                                 n += 1
                                 # plb.savefig('%s' % algorithm)
                     fout = open(conf_info["log_path"], "a")
-                    fout.write("avg_auc: "+str(sum_auc/n)+"\n")
+                    fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
                     fout.close()
                     prints(sum_auc/n)
 
