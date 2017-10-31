@@ -210,7 +210,7 @@ if __name__ == '__main__':
                 fout = open(conf_info["log_path"], "a")
                 fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
                 fout.close()
-                prints(sum_auc/n)
+                prints("avg_auc: ", sum_auc/n)
 
 
     except:
