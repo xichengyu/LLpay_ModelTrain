@@ -132,11 +132,13 @@ if __name__ == '__main__':
         prints("Dealing Missing Value...")
         for strategy in strategies:
             new_data = mvs.fill_strategy(raw_data, strategy)
-
             prints(DataFrame(new_data))
 
+            prints("Separating Data...")
             for k, v in dict(zip(train_partition_n, total_partition_n)).items():
                 for i in range(run_times):
+
+                    prints("Generating Train Data & Test Data...")
                     train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
                     sum_auc = 0.0
                     n = 0
