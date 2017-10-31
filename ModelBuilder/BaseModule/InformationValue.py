@@ -162,19 +162,12 @@ class WOE(object):
         :return: discreted 1-D numpy array
         '''
         res = np.array([0] * x.shape[-1], dtype=int)
-        x_temp = x[x != -1.0]
-        for i in range(1+n):
-            if i == 0:
-                x1 = x[np.where(x == -1.0)]
-                mask = np.in1d(x, x1)
-                res[mask] = (i + 1)
-                logging.info("discrete: " + str((-1.0, -1.0)))
-            else:
-                point1, point2 = stats.scoreatpercentile(x_temp, [(i-1)*100/n, i*100/n])
-                x1 = x[np.where((x >= point1) & (x <= point2))]
-                mask = np.in1d(x, x1)
-                res[mask] = (i + 1)
-                logging.info("discrete: " + str(res) + str((point1, point2)))
+        for i in range(n):
+            point1, point2 = stats.scoreatpercentile(x, [i*100/n, (i+1)*100/n])
+            x1 = x[np.where((x >= point1) & (x <= point2))]
+            mask = np.in1d(x, x1)
+            res[mask] = (i + 1)
+            logging.info("discrete: " + str(res) + str((point1, point2)))
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))
         return res
