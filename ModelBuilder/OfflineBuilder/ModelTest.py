@@ -136,12 +136,13 @@ if __name__ == '__main__':
 
             prints("Separating Data...")
             for k, v in dict(zip(train_partition_n, total_partition_n)).items():
+                sum_auc = 0.0
+                n = 0
                 for i in range(run_times):
 
                     prints("Generating Train Data & Test Data...")
                     train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
-                    sum_auc = 0.0
-                    n = 0
+
                     for train_data in train_data_list:
 
                         if 1:
@@ -204,10 +205,10 @@ if __name__ == '__main__':
                                 sum_auc += auc(fpr, tpr)
                                 n += 1
                                 # plb.savefig('%s' % algorithm)
-                    fout = open(conf_info["log_path"], "a")
-                    fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
-                    fout.close()
-                    prints(sum_auc/n)
+                fout = open(conf_info["log_path"], "a")
+                fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
+                fout.close()
+                prints(sum_auc/n)
 
 
     except:
