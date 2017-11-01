@@ -60,7 +60,8 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 woe = WOE()
                 woe.WOE_N = 20
                 woe, iv = woe.woe(train_data, target)
-                prints(woe, iv.sort())
+                iv.sort()
+                prints(woe, iv)
             '''
             # merge features
             print ('\033[1;35;40m')
