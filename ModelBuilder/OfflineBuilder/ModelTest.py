@@ -163,7 +163,7 @@ if __name__ == '__main__':
                             for depth in depth_n:
 
                                 prints("Training Model...")
-                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=12)
+                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=30)
                                 rf.fit(train_data, train_target)
                                 model = rf
 
