@@ -167,17 +167,17 @@ if __name__ == '__main__':
                                 rf.fit(train_data, train_target)
                                 model = rf
 
-                        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-                        '''
-                        keys = joblib.load("../../conf/keys.cf")
-                        bounds = joblib.load("../../conf/feature_value_bounds.cf")
-                        merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
-                        dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
-                        dr_model = joblib.load('../../conf/dr_model.cf')
-                        input_test_features = [x for x in keys if x.find('_') == -1]
-                        print(input_test_features)
-                        '''
-                        # model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
+                                ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                                '''
+                                keys = joblib.load("../../conf/keys.cf")
+                                bounds = joblib.load("../../conf/feature_value_bounds.cf")
+                                merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
+                                dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
+                                dr_model = joblib.load('../../conf/dr_model.cf')
+                                input_test_features = [x for x in keys if x.find('_') == -1]
+                                print(input_test_features)
+                                '''
+                                # model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
 
                                 if 0:
                                     '''
