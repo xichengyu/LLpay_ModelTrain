@@ -59,13 +59,13 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
             if 1:
                 woe = WOE()
                 woe.WOE_N = 20
-                woe, iv = woe.woe(train_data, target)
+                woes, ivs = woe.woe(train_data, target)
                 train_data = woe.feature_discretion(train_data)
 
                 prints(train_data.shape)
 
                 temp = []
-                for v, idx in enumerate(iv):
+                for idx, v in enumerate(ivs):
                     if v > 0.02:
                         temp.append(train_data[:, idx])
 
