@@ -60,6 +60,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 woe = WOE()
                 woe.WOE_N = 20
                 train_data, woes, ivs = woe.woe(train_data, target)
+                joblib.dump(ivs, "../../conf/iv.cnf")
                 prints(train_data.shape)
                 temp = []
                 for idx, v in enumerate(ivs):

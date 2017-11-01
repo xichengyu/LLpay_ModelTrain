@@ -187,6 +187,16 @@ if __name__ == '__main__':
                             for test_data in test_data_list:
                                 target = test_data[:, 0]
                                 test_data = np.delete(test_data, 0, axis=1)
+
+                                prints(test_data.shape)
+                                ivs = joblib.load("../../conf/iv.cnf")
+                                temp = []
+                                for idx, iv in enumerate(ivs):
+                                    if iv > 0.02:
+                                        temp.append(test_data[:, idx])
+                                test_data = np.array(temp).T
+                                prints(test_data.shape)
+
                                 '''
                                 for k in test_keys:
                                     test_data.pop(k) if k not in input_test_features else test_data
