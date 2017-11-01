@@ -124,10 +124,10 @@ if __name__ == '__main__':
     strategies = ["median"]
     run_times = 1
     y_idx = 0
-    # tree_n = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
-    tree_n = [10]
-    # depth_n = [10, 15, 20]
-    depth_n = [1]
+    tree_n = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
+    # tree_n = [10]
+    depth_n = [8, 10, 12, 15, 18, 20]
+    # depth_n = [1]
 
     total_partition_n = [1]
     train_partition_n = [1]
