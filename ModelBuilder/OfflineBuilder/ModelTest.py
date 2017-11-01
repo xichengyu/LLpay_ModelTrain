@@ -188,14 +188,15 @@ if __name__ == '__main__':
                                 target = test_data[:, 0]
                                 test_data = np.delete(test_data, 0, axis=1)
 
-                                prints(test_data.shape)
-                                ivs = joblib.load("../../conf/iv.cnf")
-                                temp = []
-                                for idx, iv in enumerate(ivs):
-                                    if iv > 0.02:
-                                        temp.append(test_data[:, idx])
-                                test_data = np.array(temp).T
-                                prints(test_data.shape)
+                                if 0:
+                                    prints(test_data.shape)
+                                    ivs = joblib.load("../../conf/iv.cnf")
+                                    temp = []
+                                    for idx, iv in enumerate(ivs):
+                                        if iv > 0.02:
+                                            temp.append(test_data[:, idx])
+                                    test_data = np.array(temp).T
+                                    prints(test_data.shape)
 
                                 '''
                                 for k in test_keys:

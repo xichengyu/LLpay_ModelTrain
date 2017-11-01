@@ -56,7 +56,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 # dic = pp.DummyCoding(dic, dum_coding_fields)
                 # joblib.dump(dum_coding_fields, "../../conf/dum_coding_fields.cf")
 
-            if 1:
+            if 0:
                 woe = WOE()
                 woe.WOE_N = 20
                 train_data, woes, ivs = woe.woe(train_data, target)
@@ -156,7 +156,7 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
 
         elif algorithm == "RF":
             # RandomForest
-            rf=RandomForestRegressor(n_estimators=100, max_depth=10)
+            rf=RandomForestRegressor(n_estimators=100, max_depth=15)
             # rf = RandomForestClassifier(n_estimators=100)
             rf.fit(train_data, target)
             train_time = time.time()
