@@ -60,8 +60,19 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                 woe = WOE()
                 woe.WOE_N = 20
                 woe, iv = woe.woe(train_data, target)
-                iv.sort()
-                prints(woe, iv)
+                train_data = woe.feature_discretion(train_data)
+
+                prints(train_data.shape)
+
+                temp = []
+                for v, idx in enumerate(iv):
+                    if v > 0.02:
+                        temp.append(train_data[:, idx])
+
+                train_data = np.array(temp).T
+
+                prints(train_data.shape)
+
             '''
             # merge features
             print ('\033[1;35;40m')
