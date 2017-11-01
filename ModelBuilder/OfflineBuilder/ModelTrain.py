@@ -66,6 +66,8 @@ def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True,
                     if v > 0.02:
                         temp.append(train_data[:, idx])
                 train_data = np.array(temp).T
+                ivs.sort()
+                prints(ivs)
                 prints(train_data.shape)
 
             '''
