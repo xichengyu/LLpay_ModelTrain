@@ -22,6 +22,7 @@ import ModelTrain
 import numpy as np
 import LocalReceiver as lr
 from read_cnf import get_conf_info
+from sklearn.ensemble import RandomForestRegressor
 
 
 data_src = 'local'
@@ -122,6 +123,11 @@ if __name__ == '__main__':
     # strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
     strategies = ["median"]
     run_times = 1
+    y_idx = 0
+    # tree_n = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
+    tree_n = [10]
+    # depth_n = [10, 15, 20]
+    depth_n = [1]
 
     total_partition_n = [1]
     train_partition_n = [1]
@@ -146,9 +152,20 @@ if __name__ == '__main__':
 
                     for train_data in train_data_list:
 
-                        if 1:
-                            prints("Training Model...")
+
+                        if 0:
                             ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
+
+                        train_target = train_data[:, y_idx]
+                        train_data = np.delete(train_data, y_idx, axis=1)
+
+                        for tree in tree_n:
+                            for depth in depth_n:
+
+                                prints("Training Model...")
+                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth)
+                                rf.fit(train_data, train_target)
+                                model = rf
 
                         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                         '''
@@ -160,65 +177,63 @@ if __name__ == '__main__':
                         input_test_features = [x for x in keys if x.find('_') == -1]
                         print(input_test_features)
                         '''
-                        model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
-
-                        target = []
-
-                        if 0:
-                            '''
-                            test_data = joblib.load("../../conf/test_data.dt")
-                            target = [float(x) for x in joblib.load("../../conf/target.dt")]
-        
-                            test_keys = test_data.keys()
-                            for k in test_keys:
-                                test_data.pop(k) if k not in input_test_features else test_data
-                            test_json = json.JSONEncoder().encode(test_data)
-                            test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                            predict_y = model.predict(test_data)
-        
-                            met.ROC(algorithm, predict_y, target)
-                            fpr, tpr, thresholds = roc_curve(target, predict_y)
-                            print(fpr, tpr, thresholds)
-                            print(roc_auc_score(target, predict_y))
-                            '''
-                            pass
-                        else:
-                            prints("Testing Model...")
-                            for test_data in test_data_list:
-                                target = test_data[:, 0]
-                                test_data = np.delete(test_data, 0, axis=1)
+                        # model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
 
                                 if 0:
-                                    prints(test_data.shape)
-                                    ivs = joblib.load("../../conf/iv.cnf")
-                                    temp = []
-                                    for idx, iv in enumerate(ivs):
-                                        if iv > 0.02:
-                                            temp.append(test_data[:, idx])
-                                    test_data = np.array(temp).T
-                                    prints(test_data.shape)
+                                    '''
+                                    test_data = joblib.load("../../conf/test_data.dt")
+                                    target = [float(x) for x in joblib.load("../../conf/target.dt")]
+                
+                                    test_keys = test_data.keys()
+                                    for k in test_keys:
+                                        test_data.pop(k) if k not in input_test_features else test_data
+                                    test_json = json.JSONEncoder().encode(test_data)
+                                    test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
+                                    predict_y = model.predict(test_data)
+                
+                                    met.ROC(algorithm, predict_y, target)
+                                    fpr, tpr, thresholds = roc_curve(target, predict_y)
+                                    print(fpr, tpr, thresholds)
+                                    print(roc_auc_score(target, predict_y))
+                                    '''
+                                    pass
+                                else:
+                                    prints("Testing Model...")
+                                    for test_data in test_data_list:
+                                        test_target = test_data[:, 0]
+                                        test_data = np.delete(test_data, 0, axis=1)
 
-                                '''
-                                for k in test_keys:
-                                    test_data.pop(k) if k not in input_test_features else test_data
-        
-                                test_json = json.JSONEncoder().encode(test_data)
-                                test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                                # test_data = dr_model.transform(np.array(test_data))
-                                '''
-                                predict_y = model.predict(test_data)
+                                        if 0:
+                                            prints(test_data.shape)
+                                            ivs = joblib.load("../../conf/iv.cnf")
+                                            temp = []
+                                            for idx, iv in enumerate(ivs):
+                                                if iv > 0.02:
+                                                    temp.append(test_data[:, idx])
+                                            test_data = np.array(temp).T
+                                            prints(test_data.shape)
 
-                                thresholds = [x/100 for x in range(100)]
+                                        '''
+                                        for k in test_keys:
+                                            test_data.pop(k) if k not in input_test_features else test_data
+                
+                                        test_json = json.JSONEncoder().encode(test_data)
+                                        test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
+                                        # test_data = dr_model.transform(np.array(test_data))
+                                        '''
+                                        predict_y = model.predict(test_data)
 
-                                met.ROC(algorithm, strategy, predict_y, target, conf_info["log_path"], thresholds=thresholds)
-                                fpr, tpr, thresholds = roc_curve(target, predict_y)
-                                # plb.plot(fpr, tpr)
-                                # print fpr, tpr, thresholds
-                                prints('roc_auc_score: ', roc_auc_score(target, predict_y))
-                                prints('auc: ', auc(fpr, tpr))
-                                sum_auc += auc(fpr, tpr)
-                                n += 1
-                                # plb.savefig('%s' % algorithm)
+                                        thresholds = [x/100 for x in range(100)]
+
+                                        met.ROC(algorithm, strategy, predict_y, test_target, conf_info["log_path"], tree, depth,thresholds=thresholds)
+                                        fpr, tpr, thresholds = roc_curve(test_target, predict_y)
+                                        # plb.plot(fpr, tpr)
+                                        # print fpr, tpr, thresholds
+                                        prints('roc_auc_score: ', roc_auc_score(test_target, predict_y))
+                                        prints('auc: ', auc(fpr, tpr))
+                                        sum_auc += auc(fpr, tpr)
+                                        n += 1
+                                        # plb.savefig('%s' % algorithm)
                 fout = open(conf_info["log_path"], "a")
                 fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
                 fout.close()
