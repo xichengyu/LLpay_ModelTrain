@@ -28,9 +28,11 @@ if __name__ == '__main__':
     print(percentile)
 
     cnt_dict = {}
+    thresholds = [x/100 for x in range(101)]
     for item in percentile:
-        for threshold in [0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]:
-            if item <= threshold:
-                cnt_dict[threshold] = cnt_dict.get(threshold, 0) + 1
+        for i in range(100):
+            if thresholds[i] <= item <= thresholds[i+1]:
+                cnt_dict[(thresholds[i], thresholds[i+1])] = cnt_dict.get((thresholds[i], thresholds[i+1]), 0) + 1
+                break
 
     print(cnt_dict)
