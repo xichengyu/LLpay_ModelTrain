@@ -35,5 +35,5 @@ if __name__ == '__main__':
                 cnt_dict[(thresholds[i], thresholds[i+1])] = cnt_dict.get((thresholds[i], thresholds[i+1]), 0) + 1
                 break
 
-    cnt_dict = sorted(cnt_dict.items(), key=lambda d: d[1][0])
+    cnt_dict = sorted(cnt_dict.items(), key=lambda d: d[0][0])
     print(cnt_dict)
