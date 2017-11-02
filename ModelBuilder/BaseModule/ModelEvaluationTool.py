@@ -14,6 +14,7 @@ def ROC(model, strategy, predict_y, target, log_path, tree_n, depth_n, threshold
     joblib.dump(target, 'target')
     threshold_ks = {}
     fout = open(log_path, "a")
+    ks_max = 0.0
     try:
         for threshold in thresholds:
             TP, FN, FP, TN, positive = 0, 0, 0, 0, 0
@@ -41,12 +42,14 @@ def ROC(model, strategy, predict_y, target, log_path, tree_n, depth_n, threshold
                         float(FP)/(len(target) - positive) if len(target) - positive != 0 else 0,
                         KS_Value))
             threshold_ks[threshold] = KS_Value
+            ks_max = KS_Value if KS_Value > ks_max else ks_max
         threshold_ks = sorted(threshold_ks.items(), key=lambda d: d[1], reverse=True)
         fout.write(strategy+str((tree_n, depth_n))+str(threshold_ks)+"\n")
         fout.close()
     except:
         traceback.print_exc()
         pass
+    return ks_max
 
 
 if __name__ == '__main__':

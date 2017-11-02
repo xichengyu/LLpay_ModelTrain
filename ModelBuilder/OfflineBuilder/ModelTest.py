@@ -122,15 +122,16 @@ if __name__ == '__main__':
     algorithm = "RF"      # RF, GBDT, LR
     # strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
     strategies = ["median"]
-    run_times = 1
+    run_times = 10
     y_idx = 0
-    tree_n = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150]
-    # tree_n = [10]
-    depth_n = [8, 10, 12, 15, 18, 20]
-    # depth_n = [1]
+    # tree_n = [60, 70, 80, 90, 100, 110, 120, 130, 140]
+    tree_n = [10]
+    # depth_n = [12, 13, 14, 15]
+    depth_n = [1]
+    job_n = 30
 
-    total_partition_n = [1]
     train_partition_n = [1]
+    test_partition_n = [1]
 
     prints("Getting Raw Data...")
     raw_data = lr.load_local_data(conf_info["raw_data"])  # get original data
@@ -142,16 +143,15 @@ if __name__ == '__main__':
             prints(DataFrame(new_data))
 
             prints("Separating Data...")
-            for k, v in dict(zip(train_partition_n, total_partition_n)).items():
-                sum_auc = 0.0
-                n = 0
+            for k, v in dict(zip(train_partition_n, test_partition_n)).items():
+                sum_auc = {}
+                sum_ks = {}
                 for i in range(run_times):
 
                     prints("Generating Train Data & Test Data...")
                     train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
 
                     for train_data in train_data_list:
-
 
                         if 0:
                             ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                             for depth in depth_n:
 
                                 prints("Training Model...")
-                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=30)
+                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=job_n)
                                 rf.fit(train_data, train_target)
                                 model = rf
 
@@ -225,19 +225,31 @@ if __name__ == '__main__':
 
                                         thresholds = [x/100 for x in range(100)]
 
-                                        met.ROC(algorithm, strategy, predict_y, test_target, conf_info["log_path"], tree, depth,thresholds=thresholds)
+                                        ks_max = met.ROC(algorithm, strategy, predict_y, test_target,
+                                                         conf_info["log_path"], tree, depth,thresholds=thresholds)
                                         fpr, tpr, thresholds = roc_curve(test_target, predict_y)
                                         # plb.plot(fpr, tpr)
                                         # print fpr, tpr, thresholds
                                         prints('roc_auc_score: ', roc_auc_score(test_target, predict_y))
                                         prints('auc: ', auc(fpr, tpr))
-                                        sum_auc += auc(fpr, tpr)
-                                        n += 1
+
+                                        sum_auc[(tree, depth)] = sum_auc.get((tree, depth), 0)+auc(fpr, tpr)
+                                        sum_ks[(tree, depth)] = sum_ks.get((tree, depth), 0) + ks_max
+
                                         # plb.savefig('%s' % algorithm)
+
+                for tree_depth, aucs in sum_auc.items():
+                    sum_auc[tree_depth] = aucs/(run_times*k*v)
+
+                for tree_depth, kses in sum_ks.items():
+                    sum_ks[tree_depth] = kses/(run_times*k*v)
+
                 fout = open(conf_info["log_path"], "a")
-                fout.write(strategy+" avg_auc: "+str(sum_auc/n)+"\n")
+                fout.write(strategy+" avg_auc: "+str(sum_auc)+"\n")
+                fout.write(strategy+" avg_ks: "+str(sum_ks)+"\n")
                 fout.close()
-                prints("avg_auc: ", sum_auc/n)
+                prints("avg_auc: ", sum_auc)
+                prints("avg_ks: ", sum_ks)
 
 
     except:
