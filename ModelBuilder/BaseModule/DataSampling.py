@@ -58,7 +58,7 @@ class RandSamp(object):
         self._TEST_PARTITION_N = 1
         self._MULTIPLE = 5
         self._NUM = 100000
-        self._TRAIN_PERCENTILE = 0.9
+        self._TRAIN_PERCENTILE = 0.8
         self._Y_IDX = 0
 
     def random_sampling(self, data_matrix):

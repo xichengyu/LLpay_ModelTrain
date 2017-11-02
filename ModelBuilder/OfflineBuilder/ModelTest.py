@@ -106,7 +106,7 @@ def get_train_test_data(data, target_fields):
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
-        randsamp.TRAIN_PERCENTILE = 0.7
+        randsamp.TRAIN_PERCENTILE = 0.8
         train_data, test_data = randsamp.random_sampling(data)
 
     except:
@@ -146,114 +146,112 @@ if __name__ == '__main__':
             new_data = mvs.fill_strategy(raw_data, strategy)
             prints(DataFrame(new_data))
 
-            prints("Separating Data...")
-            for k, v in dict(zip(train_partition_n, test_partition_n)).items():
-                sum_auc = {}
-                sum_ks = {}
-                for i in range(run_times):
+            sum_auc = {}
+            sum_ks = {}
+            for i in range(run_times):
 
-                    prints("Generating Train Data & Test Data...")
-                    train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
+                prints("Generating Train Data & Test Data...")
+                train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
 
-                    for train_data in train_data_list:
+                for train_data in train_data_list:
 
-                        if 0:
-                            ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
+                    train_target = train_data[:, y_idx]
+                    train_data = np.delete(train_data, y_idx, axis=1)
 
-                        train_target = train_data[:, y_idx]
-                        train_data = np.delete(train_data, y_idx, axis=1)
+                    if 0:
+                        ModelTrain.train_model(train_data, train_target, dum_coding_fields, algorithm, preprocessing_flag)
 
-                        for tree in tree_n:
-                            for depth in depth_n:
+                    for tree in tree_n:
+                        for depth in depth_n:
 
-                                prints("Training Model...")
-                                rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=job_n)
-                                rf.fit(train_data, train_target)
-                                model = rf
+                            prints("Training Model...")
+                            rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=job_n)
+                            rf.fit(train_data, train_target)
+                            model = rf
 
-                                ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                            '''
+                            keys = joblib.load("../../conf/keys.cf")
+                            bounds = joblib.load("../../conf/feature_value_bounds.cf")
+                            merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
+                            dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
+                            dr_model = joblib.load('../../conf/dr_model.cf')
+                            input_test_features = [x for x in keys if x.find('_') == -1]
+                            print(input_test_features)
+                            '''
+                            # model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
+
+                            if 0:
                                 '''
-                                keys = joblib.load("../../conf/keys.cf")
-                                bounds = joblib.load("../../conf/feature_value_bounds.cf")
-                                merge_bounds = joblib.load("../../conf/merge_value_bounds.cf")
-                                dum_coding_fields = joblib.load('../../conf/dum_coding_fields.cf')
-                                dr_model = joblib.load('../../conf/dr_model.cf')
-                                input_test_features = [x for x in keys if x.find('_') == -1]
-                                print(input_test_features)
+                                test_data = joblib.load("../../conf/test_data.dt")
+                                target = [float(x) for x in joblib.load("../../conf/target.dt")]
+            
+                                test_keys = test_data.keys()
+                                for k in test_keys:
+                                    test_data.pop(k) if k not in input_test_features else test_data
+                                test_json = json.JSONEncoder().encode(test_data)
+                                test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
+                                predict_y = model.predict(test_data)
+            
+                                met.ROC(algorithm, predict_y, target)
+                                fpr, tpr, thresholds = roc_curve(target, predict_y)
+                                print(fpr, tpr, thresholds)
+                                print(roc_auc_score(target, predict_y))
                                 '''
-                                # model = joblib.load("../../conf/%s_model.jm" % algorithm.lower())
+                                pass
+                            else:
+                                prints("Testing Model...")
+                                for test_data in test_data_list:
+                                    test_target = test_data[:, 0]
+                                    test_data = np.delete(test_data, 0, axis=1)
 
-                                if 0:
+                                    if 0:
+                                        prints(test_data.shape)
+                                        ivs = joblib.load("../../conf/iv.cnf")
+                                        temp = []
+                                        for idx, iv in enumerate(ivs):
+                                            if iv > 0.02:
+                                                temp.append(test_data[:, idx])
+                                        test_data = np.array(temp).T
+                                        prints(test_data.shape)
+
                                     '''
-                                    test_data = joblib.load("../../conf/test_data.dt")
-                                    target = [float(x) for x in joblib.load("../../conf/target.dt")]
-                
-                                    test_keys = test_data.keys()
                                     for k in test_keys:
                                         test_data.pop(k) if k not in input_test_features else test_data
+            
                                     test_json = json.JSONEncoder().encode(test_data)
                                     test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                                    predict_y = model.predict(test_data)
-                
-                                    met.ROC(algorithm, predict_y, target)
-                                    fpr, tpr, thresholds = roc_curve(target, predict_y)
-                                    print(fpr, tpr, thresholds)
-                                    print(roc_auc_score(target, predict_y))
+                                    # test_data = dr_model.transform(np.array(test_data))
                                     '''
-                                    pass
-                                else:
-                                    prints("Testing Model...")
-                                    for test_data in test_data_list:
-                                        test_target = test_data[:, 0]
-                                        test_data = np.delete(test_data, 0, axis=1)
+                                    predict_y = model.predict(test_data)
 
-                                        if 0:
-                                            prints(test_data.shape)
-                                            ivs = joblib.load("../../conf/iv.cnf")
-                                            temp = []
-                                            for idx, iv in enumerate(ivs):
-                                                if iv > 0.02:
-                                                    temp.append(test_data[:, idx])
-                                            test_data = np.array(temp).T
-                                            prints(test_data.shape)
+                                    thresholds = [x/100 for x in range(100)]
 
-                                        '''
-                                        for k in test_keys:
-                                            test_data.pop(k) if k not in input_test_features else test_data
-                
-                                        test_json = json.JSONEncoder().encode(test_data)
-                                        test_data = normalize_input_data(test_json, keys, bounds, merge_bounds, dum_coding_fields)
-                                        # test_data = dr_model.transform(np.array(test_data))
-                                        '''
-                                        predict_y = model.predict(test_data)
+                                    ks_max = met.ROC(algorithm, strategy, predict_y, test_target,
+                                                     conf_info["log_path"], tree, depth,thresholds=thresholds)
+                                    fpr, tpr, thresholds = roc_curve(test_target, predict_y)
+                                    # plb.plot(fpr, tpr)
+                                    # print fpr, tpr, thresholds
+                                    prints('roc_auc_score: ', roc_auc_score(test_target, predict_y))
+                                    prints('auc: ', auc(fpr, tpr))
 
-                                        thresholds = [x/100 for x in range(100)]
+                                    sum_auc[(tree, depth)] = sum_auc.get((tree, depth), 0)+auc(fpr, tpr)
+                                    sum_ks[(tree, depth)] = sum_ks.get((tree, depth), 0) + ks_max
 
-                                        ks_max = met.ROC(algorithm, strategy, predict_y, test_target,
-                                                         conf_info["log_path"], tree, depth,thresholds=thresholds)
-                                        fpr, tpr, thresholds = roc_curve(test_target, predict_y)
-                                        # plb.plot(fpr, tpr)
-                                        # print fpr, tpr, thresholds
-                                        prints('roc_auc_score: ', roc_auc_score(test_target, predict_y))
-                                        prints('auc: ', auc(fpr, tpr))
+                                    # plb.savefig('%s' % algorithm)
 
-                                        sum_auc[(tree, depth)] = sum_auc.get((tree, depth), 0)+auc(fpr, tpr)
-                                        sum_ks[(tree, depth)] = sum_ks.get((tree, depth), 0) + ks_max
+            for tree_depth, aucs in sum_auc.items():
+                sum_auc[tree_depth] = aucs/(run_times)
 
-                                        # plb.savefig('%s' % algorithm)
+            for tree_depth, kses in sum_ks.items():
+                sum_ks[tree_depth] = kses/(run_times)
 
-                for tree_depth, aucs in sum_auc.items():
-                    sum_auc[tree_depth] = aucs/(run_times*k*v)
-
-                for tree_depth, kses in sum_ks.items():
-                    sum_ks[tree_depth] = kses/(run_times*k*v)
-
-                fout = open(conf_info["log_path"], "a")
-                fout.write(strategy+" avg_auc: "+str(sum_auc)+"\n")
-                fout.write(strategy+" avg_ks: "+str(sum_ks)+"\n")
-                fout.close()
-                prints("avg_auc: ", sum_auc)
-                prints("avg_ks: ", sum_ks)
+            fout = open(conf_info["log_path"], "a")
+            fout.write(strategy+" avg_auc: "+str(sum_auc)+"\n")
+            fout.write(strategy+" avg_ks: "+str(sum_ks)+"\n")
+            fout.close()
+            prints("avg_auc: ", sum_auc)
+            prints("avg_ks: ", sum_ks)
 
 
     except:

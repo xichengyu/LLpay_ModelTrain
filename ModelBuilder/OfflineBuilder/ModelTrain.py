@@ -36,13 +36,8 @@ delim = ";"
 area_delim = ","
 
 
-def train_model(train_data, dum_coding_fields, algorithm, if_preprocessing=True, y_idx=0):
+def train_model(train_data, target, dum_coding_fields, algorithm, if_preprocessing=True):
     try:
-        target = train_data[:, y_idx]
-        joblib.dump(target, "../../data/target.dt")
-        train_data = np.delete(train_data, y_idx, axis=1)
-        joblib.dump(train_data, "../../data/train_data.dt")
-
         '''unixtime to hour'''
 
         if if_preprocessing:
