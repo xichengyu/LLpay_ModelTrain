@@ -136,6 +136,10 @@ if __name__ == '__main__':
     prints("Getting Raw Data...")
     raw_data = lr.load_local_data(conf_info["raw_data"])  # get original data
 
+    prints("deleting Sample...")
+    raw_data = pp.delete_sample(raw_data)
+    prints(raw_data.shape)
+
     try:
         prints("Dealing Missing Value...")
         for strategy in strategies:
@@ -152,10 +156,6 @@ if __name__ == '__main__':
                     train_data_list, test_data_list = get_train_test_data(data=new_data, target_fields=target_fields)
 
                     for train_data in train_data_list:
-
-                        prints("deleting Sample...")
-                        train_data = pp.delete_sample(train_data)
-                        prints(train_data.shape)
 
                         if 0:
                             ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
