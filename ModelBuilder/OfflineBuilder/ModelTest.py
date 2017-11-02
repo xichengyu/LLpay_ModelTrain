@@ -128,7 +128,7 @@ if __name__ == '__main__':
     # tree_n = [10, 5]
     depth_n = [12, 13, 14, 15]
     # depth_n = [1, 2]
-    job_n = 30
+    job_n = 35
 
     train_partition_n = [1]
     test_partition_n = [1]
