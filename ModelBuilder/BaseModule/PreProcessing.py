@@ -10,6 +10,20 @@ import binascii
 import time
 from scipy.stats import pearsonr
 
+
+def delete_sample(X, threshold=0.5):
+    temp = []
+    try:
+        for idx in range(X.shape[0]):
+            row = X[idx, :]
+            percentile = 1 - sum(np.isnan(row)) / float(len(row))
+            if percentile >= threshold:
+                temp.append(row)
+    except ValueError:
+        pass
+    return np.array(temp)
+
+
 '''transform unixtime to hour, both 'ms' and 's' '''
 
 

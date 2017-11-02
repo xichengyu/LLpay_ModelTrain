@@ -153,6 +153,10 @@ if __name__ == '__main__':
 
                     for train_data in train_data_list:
 
+                        prints("deleting Sample...")
+                        train_data = pp.delete_sample(train_data)
+                        prints(train_data.shape)
+
                         if 0:
                             ModelTrain.train_model(train_data, dum_coding_fields, algorithm, preprocessing_flag)
 
