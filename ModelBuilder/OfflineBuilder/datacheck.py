@@ -21,8 +21,8 @@ if __name__ == '__main__':
     print(DataFrame(raw_data))
 
     percentile = []
-    for idx in range(raw_data.shape[-1]):
-        column = raw_data[:, idx]
+    for idx in range(raw_data.shape[0]):
+        column = raw_data[idx, :]
         percentile.append(1-sum(np.isnan(column))/float(len(column)))
 
     print(percentile)
