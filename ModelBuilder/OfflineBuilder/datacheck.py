@@ -25,14 +25,15 @@ if __name__ == '__main__':
         column = raw_data[idx, :]
         percentile.append(1-sum(np.isnan(column))/float(len(column)))
 
-    print(percentile)
+    # print(percentile)
 
     cnt_dict = {}
     thresholds = [x/100 for x in range(101)]
     for item in percentile:
         for i in range(100):
-            if thresholds[i] <= item <= thresholds[i+1]:
+            if thresholds[i] < item <= thresholds[i+1]:
                 cnt_dict[(thresholds[i], thresholds[i+1])] = cnt_dict.get((thresholds[i], thresholds[i+1]), 0) + 1
                 break
 
+    cnt_dict = sorted(cnt_dict.items(), key=lambda d: d[1][0])
     print(cnt_dict)
