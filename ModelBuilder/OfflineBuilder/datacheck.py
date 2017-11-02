@@ -3,13 +3,12 @@
 import sys
 from pandas import DataFrame
 sys.path.append('../BaseModule')
-sys.path.append("../../DataReceiver")
+sys.path.append("../../Base/DataReceiver")
 sys.path.append("../../Base")
-import PreProcessing as pp
+# import PreProcessing as pp
 import LocalReceiver as lr
-import MongoReceiver
-import DataSampling as ds
-import traceback
+# import DataSampling as ds
+# import traceback
 from read_cnf import get_conf_info
 from pandas import DataFrame
 
