@@ -1,6 +1,7 @@
 table = dbmodel.data_xicy_fullstep_sample
 
-raw_data = ../../data/raw_data.dt
+# raw_data = ../../data/raw_data.dt
+raw_data = ../../data/df_plain_104
 
 column_name = ../../conf/column_name.txt
 

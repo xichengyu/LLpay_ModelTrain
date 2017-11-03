@@ -4,9 +4,9 @@ from sklearn.preprocessing import Imputer
 import traceback
 
 
-def fill_strategy(raw_data, strategy):
+def fill_strategy(raw_data, strategy, missing_values="NaN"):
     try:
-        impute = Imputer(strategy=strategy)
+        impute = Imputer(strategy=strategy, missing_values=missing_values)
         new_data = impute.fit_transform(raw_data)
     except ValueError:
         traceback.print_exc()

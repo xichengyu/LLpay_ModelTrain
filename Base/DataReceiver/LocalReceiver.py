@@ -9,6 +9,7 @@ sys.path.append("../")
 from read_cnf import get_conf_info
 from print_switch import prints
 from sklearn.preprocessing import Imputer
+import pandas as pd
 
 
 def read_local_data(localpath, default=-1.0):
@@ -44,6 +45,14 @@ def load_local_data(localpath):
     res = np.array(joblib.load(localpath))
 
     return res
+
+
+def load_df_data(localpath):
+
+    res = pd.read_pickle(localpath)
+    data = res.iloc[:, 2:]
+
+    return np.array(data)
 
 
 if __name__ == "__main__":
