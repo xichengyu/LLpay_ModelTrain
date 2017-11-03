@@ -106,7 +106,7 @@ def get_train_test_data(data, target_fields):
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
-        randsamp.TRAIN_PERCENTILE = 0.8
+        randsamp.TRAIN_PERCENTILE = 0.9
         train_data, test_data = randsamp.random_sampling(data)
 
     except:
@@ -122,13 +122,13 @@ if __name__ == '__main__':
     algorithm = "RF"      # RF, GBDT, LR
     # strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
     strategies = ["median"]
-    run_times = 1
+    run_times = 10
     y_idx = 0
     # tree_n = [60, 70, 80, 90, 100, 110, 120, 130, 140]
-    tree_n = [60]
+    tree_n = [90]
     # depth_n = [12, 13, 14, 15]
     depth_n = [12]
-    job_n = 1
+    job_n = 35
 
     train_partition_n = [1]
     test_partition_n = [1]
@@ -136,9 +136,9 @@ if __name__ == '__main__':
     prints("Getting Raw Data...")
     raw_data = lr.load_local_data(conf_info["raw_data"])  # get original data
 
-    prints("deleting Sample...")
-    raw_data = pp.delete_sample(raw_data)
-    prints(raw_data.shape)
+    # prints("deleting Sample...")
+    # raw_data = pp.delete_sample(raw_data)
+    # prints(raw_data.shape)
 
     try:
         prints("Dealing Missing Value...")
@@ -241,10 +241,10 @@ if __name__ == '__main__':
                                     # plb.savefig('%s' % algorithm)
 
             for tree_depth, aucs in sum_auc.items():
-                sum_auc[tree_depth] = aucs/(run_times)
+                sum_auc[tree_depth] = aucs/run_times
 
             for tree_depth, kses in sum_ks.items():
-                sum_ks[tree_depth] = kses/(run_times)
+                sum_ks[tree_depth] = kses/run_times
 
             fout = open(conf_info["log_path"], "a")
             fout.write(strategy+" avg_auc: "+str(sum_auc)+"\n")
