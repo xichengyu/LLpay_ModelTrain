@@ -106,7 +106,7 @@ def get_train_test_data(data, target_fields):
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
-        randsamp.TRAIN_PERCENTILE = 0.8
+        randsamp.TRAIN_PERCENTILE = 0.9
         train_data, test_data = randsamp.random_sampling(data)
 
     except:
