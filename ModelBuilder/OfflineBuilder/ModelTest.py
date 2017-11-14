@@ -106,7 +106,7 @@ def get_train_test_data(data, target_fields):
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
-        randsamp.TRAIN_PERCENTILE = 0.9
+        randsamp.TRAIN_PERCENTILE = 0.8
         train_data, test_data = randsamp.random_sampling(data)
 
     except:
@@ -125,9 +125,9 @@ if __name__ == '__main__':
     run_times = 10
     y_idx = 0
     # tree_n = [60, 70, 80, 90, 100, 110, 120, 130, 140]
-    tree_n = [90]
+    tree_n = [60]
     # depth_n = [12, 13, 14, 15]
-    depth_n = [12]
+    depth_n = [10]
     job_n = 35
 
     train_partition_n = [1]
