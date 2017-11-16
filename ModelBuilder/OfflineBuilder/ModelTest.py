@@ -143,7 +143,8 @@ if __name__ == '__main__':
     try:
         prints("Dealing Missing Value...")
         for strategy in strategies:
-            new_data = mvs.fill_strategy(raw_data, strategy)
+            new_data = raw_data
+            # new_data = mvs.fill_strategy(raw_data, strategy)
             prints(DataFrame(new_data))
 
             sum_auc = {}
