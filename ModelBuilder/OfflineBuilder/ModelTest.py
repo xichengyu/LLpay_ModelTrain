@@ -120,8 +120,8 @@ if __name__ == '__main__':
     conf_info = get_conf_info()
     preprocessing_flag = True
     algorithm = "RF"      # RF, GBDT, LR
-    # strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
-    strategies = ["median"]
+    strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
+    # strategies = ["median"]
     run_times = 10
     y_idx = 0
     # tree_n = [60, 70, 80, 90, 100, 110, 120, 130, 140]
@@ -143,9 +143,9 @@ if __name__ == '__main__':
     try:
         prints("Dealing Missing Value...")
         for strategy in strategies:
-            raw_data[np.isnan(raw_data)] = -1
-            new_data = raw_data
-            # new_data = mvs.fill_strategy(raw_data, strategy)
+            # raw_data[np.isnan(raw_data)] = -1
+            # new_data = raw_data
+            new_data = mvs.fill_strategy(raw_data, strategy)
             prints(DataFrame(new_data))
 
             sum_auc = {}
