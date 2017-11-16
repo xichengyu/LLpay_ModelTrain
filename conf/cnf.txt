@@ -1,4 +1,4 @@
-table = dbmodel.data_xicy_fullstep_sample
+sql = select * from dbmodel.data_xicy_fullstep_sample
 
 # raw_data = ../../data/raw_data.dt
 raw_data = ../../data/df_plain_104
