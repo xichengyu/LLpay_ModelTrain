@@ -143,6 +143,7 @@ if __name__ == '__main__':
     try:
         prints("Dealing Missing Value...")
         for strategy in strategies:
+            raw_data[np.isnan(raw_data)] = -1
             new_data = raw_data
             # new_data = mvs.fill_strategy(raw_data, strategy)
             prints(DataFrame(new_data))
