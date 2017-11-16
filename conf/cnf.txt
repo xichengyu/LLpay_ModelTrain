@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 table = dbmodel.data_xicy_fullstep_202
+=======
+sql = select * from dbmodel.data_xicy_fullstep_sample
+>>>>>>> d5ece68c71c637dc2b65532757c1b340912bf8ce
 
 # raw_data = ../../data/raw_data.dt
 # raw_data = ../../data/df_plain_104
