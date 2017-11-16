@@ -73,7 +73,7 @@ def detect_str_column(nparray):
 
 if __name__ == "__main__":
 
-    test_sql = get_conf_info()["sql"]
+    test_sql = "select label, %s from dbmodel.data_xicy_fullstep_sample" % get_conf_info()["columns"]
 
     data_zz_iv = detect_str_column(np.array(fetch_from_hive(test_sql)))
 
