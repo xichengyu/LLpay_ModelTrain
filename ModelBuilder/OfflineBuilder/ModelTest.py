@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
                             prints("Training Model...")
                             rf = RandomForestRegressor(n_estimators=tree, max_depth=depth, n_jobs=job_n,
-                                                       criterion="entropy", oob_score=True)
+                                                       oob_score=True)
                             rf.fit(train_data, train_target)
                             model = rf
 
