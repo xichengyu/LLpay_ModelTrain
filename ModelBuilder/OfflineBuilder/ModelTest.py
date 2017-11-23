@@ -171,7 +171,7 @@ if __name__ == '__main__':
                                                        oob_score=True)
                             rf.fit(train_data, train_target)
                             model = rf
-
+                            joblib.dump(model, "../../conf/%s_model.jm" % algorithm.lower())
                             ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
                             '''
                             keys = joblib.load("../../conf/keys.cf")
