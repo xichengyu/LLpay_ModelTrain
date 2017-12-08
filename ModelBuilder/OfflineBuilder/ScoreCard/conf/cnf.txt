@@ -1,0 +1,8 @@
+
+data = "../../../data/scorecard_202.dt"
+
+base_score = 600
+
+gap = 20
+
+odds = 10

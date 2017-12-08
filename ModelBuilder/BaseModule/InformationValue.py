@@ -3,6 +3,8 @@ import math
 from scipy import stats
 from sklearn.utils.multiclass import type_of_target
 import logging
+from sklearn.ensemble import RandomForestRegressor
+from treeinterpreter import treeinterpreter as ti
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='[%Y-%m-%d %H:%M:%S]', filename='discretion.log', filemode='w')
 console = logging.StreamHandler()
@@ -17,18 +19,19 @@ class WOE(object):
         self._WOE_MIN = -20
         self._WOE_MAX = 20
         self._WOE_N = 20
+        self._DISCRETION = "percentile_discrete"
 
     def woe(self, X, y, event=1):
-        '''
+        """
         Calculate woe of each feature category and information value
         :param X: 2-D numpy array explanatory features which should be discreted already
         :param y: 1-D numpy array target variable which should be binary
         :param event: value of binary stands for the event to predict
         :return: numpy array of woe dictionaries, each dictionary contains woe values for categories of each feature
                  numpy array of information value of each feature
-        '''
+        """
         self.check_target_binary(y)
-        X1 = self.feature_discretion(X)
+        X1 = self.feature_discretion(X, y)
 
         res_woe = []
         res_iv = []
@@ -40,14 +43,14 @@ class WOE(object):
         return X1, np.array(res_woe), np.array(res_iv)
 
     def woe_single_x(self, x, y, event=1):
-        '''
+        """
         calculate woe and information for a single feature
         :param x: 1-D numpy starnds for single feature
         :param y: 1-D numpy array target variable
         :param event: value of binary stands for the event to predict
         :return: dictionary contains woe values for categories of this feature
                  information value of this feature
-        '''
+        """
         self.check_target_binary(y)
 
         event_total, non_event_total = self.count_binary(y, event=event)
@@ -70,12 +73,12 @@ class WOE(object):
         return woe_dict, iv
 
     def woe_replace(self, X, woe_arr):
-        '''
+        """
         replace the explanatory feature categories with its woe value
         :param X: 2-D numpy array explanatory features which should be discreted already
         :param woe_arr: numpy array of woe dictionaries, each dictionary contains woe values for categories of each feature
         :return: the new numpy array in which woe values filled
-        '''
+        """
         if X.shape[-1] != woe_arr.shape[-1]:
             raise ValueError('WOE dict array length must be equal with features length')
 
@@ -90,7 +93,7 @@ class WOE(object):
         return res
 
     def combined_iv(self, X, y, masks, event=1):
-        '''
+        """
         calcute the information vlaue of combination features
         :param X: 2-D numpy array explanatory features which should be discreted already
         :param y: 1-D numpy array target variable
@@ -98,7 +101,7 @@ class WOE(object):
                       e.g. np.array([0,0,1,1,1,0,0,0,0,0,1]), the length should be same as features length
         :param event: value of binary stands for the event to predict
         :return: woe dictionary and information value of combined features
-        '''
+        """
         if masks.shape[-1] != X.shape[-1]:
             raise ValueError('Masks array length must be equal with features length')
 
@@ -125,42 +128,55 @@ class WOE(object):
         return event_count, non_event_count
 
     def check_target_binary(self, y):
-        '''
+        """
         check if the target variable is binary, raise error if not.
         :param y:
         :return:
-        '''
+        """
         y_type = type_of_target(y)
         if y_type not in ['binary']:
             raise ValueError('Label type must be binary')
 
-    def feature_discretion(self, X):
-        '''
+    def feature_discretion(self, X, y):
+        """
         Discrete the continuous features of input data X, and keep other features unchanged.
         :param X : numpy array
         :return: the numpy array in which all continuous features are discrete
-        '''
+        """
         temp = []
-        for i in range(0, X.shape[-1]):
-            x = X[:, i]
-            x_type = type_of_target(x)
-            logging.info("before: "+" ".join([str(i), str(set(X[:, i])), str(x_type)]))
-            if x_type == 'continuous':
-                x1 = self.discrete(x, self._WOE_N)
-                temp.append(x1)
-                logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
-            else:
-                temp.append(x)
-                logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
+        if self._DISCRETION == "percentile_discrete":
+            for i in range(0, X.shape[-1]):
+                x = X[:, i]
+                x_type = type_of_target(x)
+                logging.info("before: "+" ".join([str(i), str(set(X[:, i])), str(x_type)]))
+                if x_type == 'continuous':
+                    x1 = self.percentile_discrete(x, self._WOE_N)
+                    temp.append(x1)
+                    logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
+                else:
+                    temp.append(x)
+                    logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
+        elif self._DISCRETION == "rf_discrete":
+            for i in range(0, X.shape[-1]):
+                x = X[:, i]
+                x_type = type_of_target(x)
+                logging.info("before: "+" ".join([str(i), str(set(X[:, i])), str(x_type)]))
+                if x_type == 'continuous':
+                    x1 = self.percentile_discrete(x, self._WOE_N)
+                    temp.append(x1)
+                    logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
+                else:
+                    temp.append(x)
+                    logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
         return np.array(temp).T
 
-    def discrete(self, x, n=20):
-        '''
+    def percentile_discrete(self, x, n=20):
+        """
         Discrete the input 1-D numpy array
         :param n: the number of discretion
         :param x: 1-D numpy array
         :return: discreted 1-D numpy array
-        '''
+        """
         res = np.array([0] * x.shape[-1], dtype=int)
         for i in range(n):
             point1, point2 = stats.scoreatpercentile(x, [i*100/n, (i+1)*100/n])
@@ -170,6 +186,31 @@ class WOE(object):
             logging.info("discrete: " + str(res) + str((point1, point2)))
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))
+        return res
+
+    def rf_discrete(self, x, y):
+        """
+        Discrete the input 1-D numpy array using RandomForest
+        :param x: 1-D numpy array
+        :param y: 1-D numpy array target variable
+        :return: discreted 1-D numpy array
+        """
+        res = np.array([0] * x.shape[-1], dtype=int)
+        rf = RandomForestRegressor(n_estimators=60, max_depth=10)
+        rf.fit(x, y)
+        prediction, bias, contribution = ti.predict(rf, x)
+        print(prediction, bias, contribution)
+        '''
+        for i in range(n):
+            point1, point2 = stats.scoreatpercentile(x, [i*100/n, (i+1)*100/n])
+            x1 = x[np.where((x >= point1) & (x <= point2))]
+            mask = np.in1d(x, x1)
+            res[mask] = (i + 1)
+            logging.info("discrete: " + str(res) + str((point1, point2)))
+            logging.info("mask: " + str(mask))
+        logging.info("discrete_main: " + str(res))       
+        '''
+
         return res
 
     @property
@@ -195,6 +236,14 @@ class WOE(object):
     @WOE_N.setter
     def WOE_N(self, woe_n):
         self._WOE_N = woe_n
+
+    @property
+    def DISCRETION(self):
+        return self._DISCRETION
+
+    @DISCRETION.setter
+    def DISCRETION(self, discretion):
+        self._DISCRETION = discretion
 
 
 if __name__ == "__main__":
