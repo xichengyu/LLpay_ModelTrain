@@ -210,7 +210,6 @@ class WOE(object):
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))       
         '''
-
         return res
 
     @property
