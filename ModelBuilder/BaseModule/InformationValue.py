@@ -4,6 +4,7 @@ from scipy import stats
 from sklearn.utils.multiclass import type_of_target
 import logging
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
 from treeinterpreter import treeinterpreter as ti
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='[%Y-%m-%d %H:%M:%S]', filename='discretion.log', filemode='w')
@@ -158,16 +159,10 @@ class WOE(object):
                     logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
         elif self._DISCRETION == "rf_discrete":
             for i in range(0, X.shape[-1]):
-                x = X[:, i]
-                x_type = type_of_target(x)
-                logging.info("before: "+" ".join([str(i), str(set(X[:, i])), str(x_type)]))
-                if x_type == 'continuous':
-                    x1 = self.percentile_discrete(x, self._WOE_N)
-                    temp.append(x1)
-                    logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
-                else:
-                    temp.append(x)
-                    logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
+                x = X[:, i] 
+                x1 = self.rf_discrete(x, y)
+                temp.append(x1)
+                logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
         return np.array(temp).T
 
     def percentile_discrete(self, x, n=20):
@@ -196,10 +191,12 @@ class WOE(object):
         :return: discreted 1-D numpy array
         """
         res = np.array([0] * x.shape[-1], dtype=int)
-        rf = RandomForestRegressor(n_estimators=60, max_depth=10)
-        rf.fit(x, y)
-        prediction, bias, contribution = ti.predict(rf, x)
-        print(prediction, bias, contribution)
+        x = np.column_stack((x, res))
+        # model = RandomForestRegressor(n_estimators=60, max_depth=10)
+        model = DecisionTreeRegressor(max_depth=10)
+        model.fit(x, y)
+        prediction, bias, contribution = ti.predict(model, x)
+        print(prediction, "\n", bias, "\n", contribution)
         '''
         for i in range(n):
             point1, point2 = stats.scoreatpercentile(x, [i*100/n, (i+1)*100/n])
@@ -210,6 +207,7 @@ class WOE(object):
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))       
         '''
+        raise ValueError
         return res
 
     @property
