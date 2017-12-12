@@ -3,6 +3,7 @@ import math
 from scipy import stats
 from sklearn.utils.multiclass import type_of_target
 import logging
+from collections import Counter
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 from treeinterpreter import treeinterpreter as ti
@@ -138,6 +139,29 @@ class WOE(object):
         if y_type not in ['binary']:
             raise ValueError('Label type must be binary')
 
+    def interval_point(self, x, n=20):
+        """
+        Get the lower and upper point of one interval
+        :param x:
+        :param n:
+        :return:
+        """
+        interval = []
+        set_x = sorted(set(x))
+        max_set_x, min_set_x = max(set_x), min(set_x)
+        if len(set_x) <= n:
+            interval.append((0, min_set_x))
+            for i in range(len(set_x)-2):
+                interval.append((set_x[i], set_x[i+1]))
+            interval.append((set_x[len(set_x)-2], float("inf")))
+        else:
+            gap = (max_set_x - min_set_x)/(n-1)*1.0
+            interval.append((0, min_set_x))
+            for i in range(n-2):
+                interval.append((min_set_x+i*gap, min_set_x+(i+1)*gap))
+            interval.append((min_set_x+(n-2)*gap, float("inf")))
+        return interval
+
     def feature_discretion(self, X, y):
         """
         Discrete the continuous features of input data X, and keep other features unchanged.
@@ -157,35 +181,82 @@ class WOE(object):
                 else:
                     temp.append(x)
                     logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
+        elif self._DISCRETION == "interval_discrete":
+            for i in range(0, X.shape[-1]):
+                x = X[:, i]
+                logging.info("before: "+" ".join([str(i), str(set(X[:, i]))]))
+                x1, interval = self.interval_discrete(x, self._WOE_N)
+                temp.append(x1)
+                logging.info("interval_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
         elif self._DISCRETION == "rf_discrete":
             for i in range(0, X.shape[-1]):
-                x = X[:, i] 
+                x = X[:, i]
+                logging.info("before: "+" ".join([str(i), str(set(X[:, i]))]))
                 x1 = self.rf_discrete(x, y)
                 temp.append(x1)
-                logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
+                logging.info("rf_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
         return np.array(temp).T
 
     def percentile_discrete(self, x, n=20):
         """
-        Discrete the input 1-D numpy array
+        Discrete the input 1-D numpy array based on percentile
         :param n: the number of discretion
         :param x: 1-D numpy array
         :return: discreted 1-D numpy array
         """
         res = np.array([0] * x.shape[-1], dtype=int)
-        for i in range(n):
-            point1, point2 = stats.scoreatpercentile(x, [i*100/n, (i+1)*100/n])
-            x1 = x[np.where((x >= point1) & (x <= point2))]
+        logging.info("before_counter: " + str(Counter(x)))
+        x_temp = x[x != -1.0]
+        interval_list = []
+        for i in range(1+n):
+            if i == 0:
+                x1 = x[np.where(x == -1.0)]
+                mask = np.in1d(x, x1)
+                res[mask] = (i + 1)
+                logging.info("discrete: " + str((-1.0, -1.0)))
+                point1, point2 = -1, -1
+            else:
+                point1, point2 = stats.scoreatpercentile(x_temp, [(i-1)*100/n, i*100/n])
+                x1 = x[np.where((x >= point1) & (x <= point2))]
+                mask = np.in1d(x, x1)
+                res[mask] = (i + 1)
+                logging.info("discrete: " + str(res) + str((point1, point2)))
+            interval_list.append((point1, point2))
+            logging.info("mask: " + str(mask))
+        logging.info("discrete_main: " + str(res))
+        logging.info("discrete_counter: " + str(Counter(res)))
+        return res, interval_list
+
+    def interval_discrete(self, x, n=20):
+        """
+        Discrete the input 1-D numpy array based on interval
+        :param n: the number of discretion
+        :param x: 1-D numpy array
+        :return: discreted 1-D numpy array
+        """
+        res = np.array([0] * x.shape[-1], dtype=int)
+        logging.info("before_counter: " + str(Counter(x)))
+        x_temp = x[x != -1.0]
+        interval_list = [(-1.0, -1.0)] + self.interval_point(x_temp, n)
+        for i, point in enumerate(interval_list):
+            point = interval_list[i]
+            point1, point2 = point[0], point[1]
+            if point1 == point2:
+                x1 = x[np.where((x >= point1) & (x <= point2))]
+            else:
+                x1 = x[np.where((x > point1) & (x <= point2))]
             mask = np.in1d(x, x1)
             res[mask] = (i + 1)
             logging.info("discrete: " + str(res) + str((point1, point2)))
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))
-        return res
+        logging.info("discrete_counter: " + str(Counter(res)))
+        logging.info("interval_point: " + str(interval_list))
+        return res, interval_list
 
     def rf_discrete(self, x, y):
         """
-        Discrete the input 1-D numpy array using RandomForest
+        Discrete the input 1-D numpy array based on RandomForest
         :param x: 1-D numpy array
         :param y: 1-D numpy array target variable
         :return: discreted 1-D numpy array

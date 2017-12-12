@@ -55,15 +55,16 @@ if __name__ == '__main__':
     cal_woe = WOE()
     cal_woe.WOE_MAX = 1
     cal_woe.WOE_MIN = -1
-    cal_woe.DISCRETION = "percentile_discrete"  # rf_discrete, percentile_discrete
+    cal_woe.WOE_N = 10
+    cal_woe.DISCRETION = "interval_discrete"  # rf_discrete, percentile_discrete, interval_discrete
     X_discretion, woe, iv = cal_woe.woe(X, y)
 
     joblib.dump(X_discretion, "./conf/X_discretion.nparray")
     joblib.dump(woe, "./conf/woe.nparray")
     joblib.dump(iv, "./conf/iv.nparray")
 
-    # iv.sort()
-    # prints(iv)
+    iv.sort()
+    prints(iv)
 
     X_woe_replace = cal_woe.woe_replace(X_discretion, woe)
     prints(X_woe_replace)
