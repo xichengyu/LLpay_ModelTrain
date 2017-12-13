@@ -22,6 +22,7 @@ class WOE(object):
         self._WOE_MAX = 20
         self._WOE_N = 20
         self._DISCRETION = "percentile_discrete"
+        self.interval = []
 
     def woe(self, X, y, event=1):
         """
@@ -33,7 +34,7 @@ class WOE(object):
                  numpy array of information value of each feature
         """
         self.check_target_binary(y)
-        X1 = self.feature_discretion(X, y)
+        X1, self.interval = self.feature_discretion(X, y)
 
         res_woe = []
         res_iv = []
@@ -91,8 +92,7 @@ class WOE(object):
                 woe = woe_dict[k]
                 res[:, idx][np.where(res[:, idx] == k)[0]] = woe * 1.0
             idx += 1
-
-        return res
+        return res, self.interval
 
     def combined_iv(self, X, y, masks, event=1):
         """
@@ -168,34 +168,43 @@ class WOE(object):
         :param X : numpy array
         :return: the numpy array in which all continuous features are discrete
         """
-        temp = []
+        temp, X_interval = [], []
         if self._DISCRETION == "percentile_discrete":
             for i in range(0, X.shape[-1]):
                 x = X[:, i]
                 x_type = type_of_target(x)
                 logging.info("before: "+" ".join([str(i), str(set(X[:, i])), str(x_type)]))
-                if x_type == 'continuous':
-                    x1 = self.percentile_discrete(x, self._WOE_N)
+                if 0:
+                    if x_type == 'continuous':
+                        x1, interval = self.percentile_discrete(x, self._WOE_N)
+                        X_interval.append(interval)
+                        temp.append(x1)
+                        logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
+                    else:
+                        temp.append(x)
+                        logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
+                else:
+                    x1, interval = self.percentile_discrete(x, self._WOE_N)
+                    X_interval.append(interval)
                     temp.append(x1)
                     logging.info("continue_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
-                else:
-                    temp.append(x)
-                    logging.info("after: " + " ".join([str(i), str(set(x)), str(x)]))
         elif self._DISCRETION == "interval_discrete":
             for i in range(0, X.shape[-1]):
                 x = X[:, i]
                 logging.info("before: "+" ".join([str(i), str(set(X[:, i]))]))
                 x1, interval = self.interval_discrete(x, self._WOE_N)
+                X_interval.append(interval)
                 temp.append(x1)
                 logging.info("interval_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
         elif self._DISCRETION == "rf_discrete":
             for i in range(0, X.shape[-1]):
                 x = X[:, i]
                 logging.info("before: "+" ".join([str(i), str(set(X[:, i]))]))
-                x1 = self.rf_discrete(x, y)
+                x1, interval = self.rf_discrete(x, y)
+                X_interval.append(interval)
                 temp.append(x1)
                 logging.info("rf_after: " + " ".join([str(i), str(set(x1)), str(x1)]))
-        return np.array(temp).T
+        return np.array(temp).T, X_interval
 
     def percentile_discrete(self, x, n=20):
         """
@@ -262,6 +271,7 @@ class WOE(object):
         :return: discreted 1-D numpy array
         """
         res = np.array([0] * x.shape[-1], dtype=int)
+        interval_list = []
         x = np.column_stack((x, res))
         # model = RandomForestRegressor(n_estimators=60, max_depth=10)
         model = DecisionTreeRegressor(max_depth=10)
@@ -278,8 +288,8 @@ class WOE(object):
             logging.info("mask: " + str(mask))
         logging.info("discrete_main: " + str(res))       
         '''
-        raise ValueError
-        return res
+        # raise ValueError
+        return res, interval_list
 
     @property
     def WOE_MIN(self):

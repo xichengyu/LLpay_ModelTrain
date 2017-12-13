@@ -10,6 +10,7 @@ from print_switch import prints
 from read_cnf import get_conf_info as cnf
 from InformationValue import WOE
 from sklearn.externals import joblib
+from logistic import get_priority
 
 
 def get_scale_location(base_score=600.0, gap=20.0, odds=10.0):
@@ -51,12 +52,13 @@ if __name__ == '__main__':
     prints(scale, location)
 
     X, y = get_raw_data()
+    joblib.dump(y, "y.nparray")
 
     cal_woe = WOE()
-    cal_woe.WOE_MAX = 1
-    cal_woe.WOE_MIN = -1
+    # cal_woe.WOE_MAX = 1
+    # cal_woe.WOE_MIN = -1
     cal_woe.WOE_N = 10
-    cal_woe.DISCRETION = "interval_discrete"  # rf_discrete, percentile_discrete, interval_discrete
+    cal_woe.DISCRETION = "percentile_discrete"  # rf_discrete, percentile_discrete, interval_discrete
     X_discretion, woe, iv = cal_woe.woe(X, y)
 
     joblib.dump(X_discretion, "./conf/X_discretion.nparray")
@@ -66,10 +68,31 @@ if __name__ == '__main__':
     iv.sort()
     prints(iv)
 
-    X_woe_replace = cal_woe.woe_replace(X_discretion, woe)
+    X_woe_replace, X_interval = cal_woe.woe_replace(X_discretion, woe)
     prints(X_woe_replace)
-
+    for i, interval in enumerate(X_interval):
+        prints(i, interval)
     joblib.dump(X_woe_replace, "./conf/X_woe_replace.nparray")
+    joblib.dump(X_interval, "./conf/X_interval.nparray")
+
+    coef = get_priority(X_woe_replace, y)
+    joblib.dump(coef, "./conf/LR.coef")
+
+    for idx in range(X_woe_replace.shape[-1]):
+        X_woe_replace[:, idx] = X_woe_replace[:, idx]*scale*coef[idx]
+
+    for idx in range(woe.shape[0]):
+        for key in woe[idx].keys():
+            woe[idx][key] = woe[idx][key]*scale*coef[idx]
+
+    joblib.dump(woe, "./conf/woe_score.nparray")
+
+    score = []
+    for idx in range(X_woe_replace.shape[0]):
+        score.append(location+sum(X_woe_replace[idx, :]))
+
+    joblib.dump(score, "./conf/score.nparray")
+
 
 
 
