@@ -82,8 +82,6 @@ if __name__ == '__main__':
     joblib.dump(train_y, "./conf/train_y.nparray")
     joblib.dump(test_y, "./conf/test_y.nparray")
 
-    raise ValueError
-
     cal_woe = WOE()
     # cal_woe.WOE_MAX = 1
     # cal_woe.WOE_MIN = -1
