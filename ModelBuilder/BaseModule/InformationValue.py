@@ -248,7 +248,6 @@ class WOE(object):
         x_temp = x[x != -1.0]
         interval_list = [(-1.0, -1.0)] + self.interval_point(x_temp, n)
         for i, point in enumerate(interval_list):
-            point = interval_list[i]
             point1, point2 = point[0], point[1]
             if point1 == point2:
                 x1 = x[np.where((x >= point1) & (x <= point2))]
@@ -290,6 +289,57 @@ class WOE(object):
         '''
         # raise ValueError
         return res, interval_list
+
+    def test_percentile_discrete(self, test_X):
+        """
+        Discrete the input 2-D test numpy array based on percentile
+        :param test_X: 1-D numpy array
+        :return: discreted 1-D test numpy array
+        """
+        temp = []
+        for idx in range(test_X.shape[-1]):
+            x = test_X[:, idx]
+            res = np.array([0] * x.shape[-1], dtype=int)
+            logging.info("test_before_counter: " + str(Counter(x)))
+            for i, point in enumerate(self.interval[idx]):
+                point1, point2 = point[0], point[1]
+                x1 = x[np.where((x >= point1) & (x <= point2))]
+                mask = np.in1d(x, x1)
+                res[mask] = (i + 1)
+                logging.info("test_discrete: " + str(res) + str((point1, point2)))
+                logging.info("test_mask: " + str(mask))
+                logging.info("test_interval_point: " + str(point))
+            logging.info("test_discrete_main: " + str(res))
+            logging.info("test_discrete_counter: " + str(Counter(res)))
+            temp.append(res)
+        return np.array(temp).T
+
+    def test_interval_discrete(self, test_X):
+        """
+        Discrete the input 2-D test numpy array based on interval
+        :param test_X: 2-D numpy array
+        :return: discreted 1-D test numpy array
+        """
+        temp = []
+        for idx in range(test_X.shape[-1]):
+            x = test_X[:, idx]
+            res = np.array([0] * x.shape[-1], dtype=int)
+            logging.info("test_before_counter: " + str(Counter(x)))
+            for i, point in enumerate(self.interval[idx]):
+                point1, point2 = point[0], point[1]
+                if point1 == point2:
+                    x1 = x[np.where((x >= point1) & (x <= point2))]
+                else:
+                    x1 = x[np.where((x > point1) & (x <= point2))]
+                mask = np.in1d(x, x1)
+                res[mask] = (i + 1)
+                logging.info("test_discrete: " + str(res) + str((point1, point2)))
+                logging.info("test_mask: " + str(mask))
+                logging.info("test_interval_point: " + str(point))
+            logging.info("test_discrete_main: " + str(res))
+            logging.info("test_discrete_counter: " + str(Counter(res)))
+            temp.append(res)
+        return np.array(temp).T
 
     @property
     def WOE_MIN(self):
