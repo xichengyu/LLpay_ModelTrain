@@ -29,7 +29,7 @@ def create_traindata(train_matrix, y_idx, partition_n=1, sampling_process="up", 
                 pass
             elif sampling_process is None:
                 pass
-            prints(tmp_data.shape, bad_sample.shape)
+            prints("sampled_data: ", tmp_data.shape, "bad_sample: ", bad_sample.shape)
             train_data.append(tmp_data)
     except:
         traceback.print_exc()
@@ -70,7 +70,7 @@ class RandSamp(object):
             train_data_tmp = data_matrix[:self._NUM if self._TRAIN_PERCENTILE is None else int(shape_tuple[0] * self._TRAIN_PERCENTILE), :]
             test_data_tmp = data_matrix[self._NUM if self._TRAIN_PERCENTILE is None else int(shape_tuple[0] * self._TRAIN_PERCENTILE):, :]
 
-            prints(train_data_tmp.shape, test_data_tmp.shape)
+            prints("train_data: ", train_data_tmp.shape, "test_data: ", test_data_tmp.shape)
 
             train_data = create_traindata(train_data_tmp, self._Y_IDX, partition_n=self._TRAIN_PARTITION_N,
                                           sampling_process=self._SAMPLING_PROCESS, multiple=self._MULTIPLE)

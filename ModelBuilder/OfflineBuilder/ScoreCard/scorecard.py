@@ -56,6 +56,7 @@ def get_train_test_data(data, target_fields=None):
         '''create train_data, test_data'''
         randsamp = ds.RandSamp()
         randsamp.MULTIPLE = 1
+        randsamp.Y_IDX = -1
         randsamp.TRAIN_PERCENTILE = 0.8
         train_data, test_data = randsamp.random_sampling(data)
 
@@ -80,6 +81,8 @@ if __name__ == '__main__':
     test_y = test_data_list[0][:, -1]
     joblib.dump(train_y, "./conf/train_y.nparray")
     joblib.dump(test_y, "./conf/test_y.nparray")
+
+    raise ValueError
 
     cal_woe = WOE()
     # cal_woe.WOE_MAX = 1
