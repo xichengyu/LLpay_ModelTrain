@@ -31,18 +31,24 @@ def get_scale_location(base_score=600.0, gap=20.0, odds=10.0):
         return "Param type error, float is needed!"
 
 
-def get_raw_data(default=-1):
+def get_raw_data(data_dir, default=-1, y_idx=0):
     """
     load joblib format data from local place
+    :param data_dir: data directory
     :param default:
+    :param y_idx: the index of y
     :return:
     """
-    data = np.array(joblib.load("../../../data/scorecard_202.dt"))
+    data = np.array(joblib.load(data_dir))
     for idx in range(data.shape[-1]):        # replace non_type value with -1.0
         data[:, idx][np.where((data[:, idx] == '') | (data[:, idx] == None) | (data[:, idx] == "NULL"))[0]] = default
     data = data.astype(float)
-    train_X = data[:, 1:]
-    train_y = data[:, 0]
+    if y_idx == 0:
+        train_X = data[:, 1:]
+        train_y = data[:, 0]
+    else:
+        train_X = data[:, :-1]
+        train_y = data[:, -1]
     data = np.column_stack((train_X, train_y))
     return data
 
@@ -68,12 +74,14 @@ def get_train_test_data(data, target_fields=None):
 
 if __name__ == '__main__':
 
+    # 计算scale，location
     conf_info = cnf("./conf/cnf.txt")
     prints(conf_info)
     scale, location = get_scale_location(float(conf_info["base_score"]), float(conf_info["gap"]), float(conf_info["odds"]))
     prints(scale, location)
 
-    data = get_raw_data()
+    # 获取训练集和测试集
+    data = get_raw_data(data_dir=conf_info["data"], y_idx=int(conf_info["y_idx"]))
     train_data_list, test_data_list = get_train_test_data(data=data)
     train_X = train_data_list[0][:, :-1]
     train_y = train_data_list[0][:, -1]
@@ -82,6 +90,7 @@ if __name__ == '__main__':
     joblib.dump(train_y, "./conf/train_y.nparray")
     joblib.dump(test_y, "./conf/test_y.nparray")
 
+    # 计算woe
     cal_woe = WOE()
     # cal_woe.WOE_MAX = 1
     # cal_woe.WOE_MIN = -1
@@ -91,10 +100,10 @@ if __name__ == '__main__':
     joblib.dump(X_discretion, "./conf/X_discretion.nparray")
     joblib.dump(woe, "./conf/woe.nparray")
     joblib.dump(iv, "./conf/iv.nparray")
-
     iv.sort()
     prints(iv)
 
+    # 生成woe DataFrame
     X_woe_replace, X_interval = cal_woe.woe_replace(X_discretion, woe)
     prints(X_woe_replace)
     for i, interval in enumerate(X_interval):
@@ -102,18 +111,23 @@ if __name__ == '__main__':
     joblib.dump(X_woe_replace, "./conf/X_woe_replace.nparray")
     joblib.dump(X_interval, "./conf/X_interval.nparray")
 
+    # 测试集分箱
     test_X_discretion = []
     if cal_woe.DISCRETION == "percentile_discrete":
         test_X_discretion = cal_woe.test_percentile_discrete(test_X)
     elif cal_woe.DISCRETION == "interval_discrete":
         test_X_discretion = cal_woe.test_interval_discrete(test_X)
-        prints(test_X_discretion.shape)
+
+    prints(test_X_discretion.shape)
 
     test_X_woe_replace, test_X_interval = cal_woe.woe_replace(test_X_discretion, woe)
 
+    # 获取指标权重
     coef = get_priority(X_woe_replace, train_y)
+    prints(coef)
     joblib.dump(coef, "./conf/LR.coef")
 
+    # 计算测试集woe score
     for idx in range(test_X_woe_replace.shape[-1]):
         test_X_woe_replace[:, idx] = test_X_woe_replace[:, idx]*scale*coef[idx]
 
@@ -122,6 +136,7 @@ if __name__ == '__main__':
             woe[idx][key] = woe[idx][key]*scale*coef[idx]
     joblib.dump(woe, "./conf/woe_score.nparray")
 
+    # 计算各用户score
     score = []
     for idx in range(test_X_woe_replace.shape[0]):
         score.append(location+sum(test_X_woe_replace[idx, :]))

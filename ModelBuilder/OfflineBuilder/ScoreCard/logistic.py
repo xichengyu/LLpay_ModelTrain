@@ -14,5 +14,4 @@ def get_priority(X, y):
     model.fit(X, y)
     coef = model.coef_
     # coef.sort()
-    print(coef[0])
     return coef[0]
