@@ -78,7 +78,6 @@ if __name__ == '__main__':
     conf_info = cnf("./conf/cnf.txt")
     prints(conf_info)
     scale, location = get_scale_location(float(conf_info["base_score"]), float(conf_info["gap"]), float(conf_info["odds"]))
-    prints(scale, location)
 
     # 获取训练集和测试集
     data = get_raw_data(data_dir=conf_info["data"], y_idx=int(conf_info["y_idx"]))
@@ -87,13 +86,15 @@ if __name__ == '__main__':
     train_y = train_data_list[0][:, -1]
     test_X = test_data_list[0][:, :-1]
     test_y = test_data_list[0][:, -1]
+    joblib.dump(train_X, "./conf/train_X.nparray")
     joblib.dump(train_y, "./conf/train_y.nparray")
+    joblib.dump(test_X, "./conf/test_X.nparray")
     joblib.dump(test_y, "./conf/test_y.nparray")
 
     # 计算woe
     cal_woe = WOE()
-    # cal_woe.WOE_MAX = 1
-    # cal_woe.WOE_MIN = -1
+    cal_woe.WOE_MAX = 1
+    cal_woe.WOE_MIN = -1
     cal_woe.WOE_N = 10
     cal_woe.DISCRETION = "interval_discrete"  # rf_discrete, percentile_discrete, interval_discrete
     X_discretion, woe, iv = cal_woe.woe(train_X, train_y)
@@ -119,8 +120,10 @@ if __name__ == '__main__':
         test_X_discretion = cal_woe.test_interval_discrete(test_X)
 
     prints(test_X_discretion.shape)
+    joblib.dump(test_X_discretion, "./conf/test_X_discretion.nparray")
 
     test_X_woe_replace, test_X_interval = cal_woe.woe_replace(test_X_discretion, woe)
+    joblib.dump(test_X_woe_replace, "./conf/test_X_woe_replace.nparray")
 
     # 获取指标权重
     coef = get_priority(X_woe_replace, train_y)
@@ -130,6 +133,7 @@ if __name__ == '__main__':
     # 计算测试集woe score
     for idx in range(test_X_woe_replace.shape[-1]):
         test_X_woe_replace[:, idx] = test_X_woe_replace[:, idx]*scale*coef[idx]
+    joblib.dump(test_X_woe_replace, "./conf/test_X_woe_score.nparray")
 
     for idx in range(woe.shape[0]):
         for key in woe[idx].keys():
@@ -142,7 +146,5 @@ if __name__ == '__main__':
         score.append(location+sum(test_X_woe_replace[idx, :]))
     joblib.dump(score, "./conf/score.nparray")
 
-
-
-
+    prints(scale, location)
 

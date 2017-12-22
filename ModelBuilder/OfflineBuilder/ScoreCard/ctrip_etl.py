@@ -1,13 +1,16 @@
 # coding=utf-8
 
 import sys
+sys.path.append("../../BaseModule")
 from datetime import datetime
 import pandas as pd
 import numpy as np
 from sklearn.externals import joblib
+import MissingValueStrategy as mvs
 
 
-data = pd.read_excel("ctrip_sample.xlsx")
+
+data = pd.read_excel("../../../data/ctrip_sample.xlsx")
 # print(data.shape)
 data = np.array(data)
 
@@ -75,6 +78,11 @@ for idx in range(data.shape[-1]):
         print(data[:, idx])
         continue
 
-print(data.shape)
+# 缺失值填充策略
+strategies = ["mean", "median", "most_frequent"]    # different strategies for dealing with missing value
 
-joblib.dump(data, "ctrip_sample.dt")
+new_data = mvs.fill_strategy(data, strategy="median", missing_values=-1.0)
+
+
+print(new_data.shape)
+joblib.dump(new_data, "../../../data/ctrip_sample.dt")
