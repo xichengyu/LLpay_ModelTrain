@@ -7,9 +7,10 @@ import numpy as np
 import ModelEvaluationTool as met
 from sklearn.metrics import roc_auc_score
 
+positive_y = 1
+
 score = joblib.load("./conf/score.nparray")
 y = joblib.load("./conf/test_y.nparray")
-
 print("total: ", y.shape, "bad_total: ", sum(y))
 
 n = 400
@@ -29,7 +30,7 @@ for j, item in enumerate(score):
     for i in range(n-1):
         if item <= x_label[i]:
             cnt_dict[i] = cnt_dict.get(i, 0)+1
-            cnt_dict_1[i] = cnt_dict_1.get(i, 0)+(1 if y[j] == 1 else 0)
+            cnt_dict_1[i] = cnt_dict_1.get(i, 0)+(1 if y[j] == positive_y else 0)
             break
 for i in range(n-1):
     if i in cnt_dict:
