@@ -86,6 +86,9 @@ if __name__ == '__main__':
     train_y = train_data_list[0][:, -1]
     test_X = test_data_list[0][:, :-1]
     test_y = test_data_list[0][:, -1]
+
+    # train_y, test_y = 1-train_y, 1-test_y
+
     joblib.dump(train_X, "./conf/train_X.nparray")
     joblib.dump(train_y, "./conf/train_y.nparray")
     joblib.dump(test_X, "./conf/test_X.nparray")

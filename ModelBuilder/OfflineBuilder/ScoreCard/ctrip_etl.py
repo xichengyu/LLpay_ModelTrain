@@ -9,7 +9,6 @@ from sklearn.externals import joblib
 import MissingValueStrategy as mvs
 
 
-
 data = pd.read_excel("../../../data/ctrip_sample.xlsx")
 # print(data.shape)
 data = np.array(data)

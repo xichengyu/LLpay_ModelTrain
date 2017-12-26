@@ -5,6 +5,7 @@ import traceback
 from sklearn.externals import joblib
 
 '''ROC'''
+positive_y = 1
 
 
 def ROC(model, strategy, predict_y, target, log_path, tree_n, depth_n, thresholds=None, C=0.0, P=""):
@@ -19,14 +20,14 @@ def ROC(model, strategy, predict_y, target, log_path, tree_n, depth_n, threshold
         for threshold in thresholds:
             TP, FN, FP, TN, positive = 0, 0, 0, 0, 0
             for i in range(len(target)):
-                positive += 1 if target[i] == 1 else 0
+                positive += 1 if target[i] == positive_y else 0
                 if threshold < predict_y[i]:
-                    if target[i] == 1:
+                    if target[i] == positive_y:
                         TP += 1
                     else:
                         FP += 1
                 else:
-                    if target[i] == 0:
+                    if target[i] == 1-positive_y:
                         TN += 1
                     else:
                         FN += 1
