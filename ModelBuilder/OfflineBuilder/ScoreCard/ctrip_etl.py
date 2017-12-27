@@ -16,7 +16,8 @@ data = np.array(data)
 raw_data = data.copy()
 
 for idx in range(data[:, 3].shape[0]):
-    data[idx, 3] = 0 if data[idx, 4] == "0-30" else data[idx, 3]
+    # data[idx, 3] = 0 if data[idx, 4] == "0-30" else data[idx, 3]
+    data[idx, 3] = 1 if data[idx, 4] == "90-120" or data[idx, 4] == "120+" else 0
 
 delete_column = [0, 1, 2, 4, 6, 32]
 

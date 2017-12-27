@@ -1,6 +1,6 @@
 
 # raw_data = ../../data/raw_data.dt
-raw_data = ../../data/df_plain_104
+raw_data = ../../data/ctrip_sample.dt
 
 column_name = ../../conf/column_name.txt
 
