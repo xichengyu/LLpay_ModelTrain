@@ -13,6 +13,8 @@ data = pd.read_excel("../../../data/ctrip_sample.xlsx")
 # print(data.shape)
 data = np.array(data)
 
+raw_data = data.copy()
+
 for idx in range(data[:, 3].shape[0]):
     data[idx, 3] = 0 if data[idx, 4] == "0-30" else data[idx, 3]
 
