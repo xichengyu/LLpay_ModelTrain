@@ -89,6 +89,8 @@ if __name__ == '__main__':
 
     # train_y, test_y = 1-train_y, 1-test_y
 
+    joblib.dump(data[:, :-1], "./conf/X.nparray")
+    joblib.dump(data[:, -1], "./conf/y.nparray")
     joblib.dump(train_X, "./conf/train_X.nparray")
     joblib.dump(train_y, "./conf/train_y.nparray")
     joblib.dump(test_X, "./conf/test_X.nparray")
@@ -115,39 +117,43 @@ if __name__ == '__main__':
     joblib.dump(X_woe_replace, "./conf/X_woe_replace.nparray")
     joblib.dump(X_interval, "./conf/X_interval.nparray")
 
-    # 测试集分箱
-    test_X_discretion = []
-    if cal_woe.DISCRETION == "percentile_discrete":
-        test_X_discretion = cal_woe.test_percentile_discrete(test_X)
-    elif cal_woe.DISCRETION == "interval_discrete":
-        test_X_discretion = cal_woe.test_interval_discrete(test_X)
-
-    prints(test_X_discretion.shape)
-    joblib.dump(test_X_discretion, "./conf/test_X_discretion.nparray")
-
-    test_X_woe_replace, test_X_interval = cal_woe.woe_replace(test_X_discretion, woe)
-    joblib.dump(test_X_woe_replace, "./conf/test_X_woe_replace.nparray")
-
     # 获取指标权重
     coef = get_priority(X_woe_replace, train_y)
     prints(coef)
     joblib.dump(coef, "./conf/LR.coef")
 
-    # 计算测试集woe score
-    for idx in range(test_X_woe_replace.shape[-1]):
-        test_X_woe_replace[:, idx] = test_X_woe_replace[:, idx]*scale*coef[idx]
-    joblib.dump(test_X_woe_replace, "./conf/test_X_woe_score.nparray")
+    # 测试集分箱
+    def get_score(test_X):
+        test_X_discretion = []
+        if cal_woe.DISCRETION == "percentile_discrete":
+            test_X_discretion = cal_woe.test_percentile_discrete(test_X)
+        elif cal_woe.DISCRETION == "interval_discrete":
+            test_X_discretion = cal_woe.test_interval_discrete(test_X)
 
-    for idx in range(woe.shape[0]):
-        for key in woe[idx].keys():
-            woe[idx][key] = woe[idx][key]*scale*coef[idx]
-    joblib.dump(woe, "./conf/woe_score.nparray")
+        prints(test_X_discretion.shape)
+        joblib.dump(test_X_discretion, "./conf/test_X_discretion.nparray")
 
-    # 计算各用户score
-    score = []
-    for idx in range(test_X_woe_replace.shape[0]):
-        score.append(location+sum(test_X_woe_replace[idx, :]))
-    joblib.dump(score, "./conf/score.nparray")
+        test_X_woe_replace, test_X_interval = cal_woe.woe_replace(test_X_discretion, woe)
+        joblib.dump(test_X_woe_replace, "./conf/test_X_woe_replace.nparray")
+
+        # 计算测试集woe score
+        for idx in range(test_X_woe_replace.shape[-1]):
+            test_X_woe_replace[:, idx] = test_X_woe_replace[:, idx]*scale*coef[idx]
+        joblib.dump(test_X_woe_replace, "./conf/test_X_woe_score.nparray")
+
+        for idx in range(woe.shape[0]):
+            for key in woe[idx].keys():
+                woe[idx][key] = woe[idx][key]*scale*coef[idx]
+        joblib.dump(woe, "./conf/woe_score.nparray")
+
+        # 计算各用户score
+        score = []
+        for idx in range(test_X_woe_replace.shape[0]):
+            score.append(location+sum(test_X_woe_replace[idx, :]))
+        joblib.dump(score, "./conf/score.nparray")
+
+    # get_score(test_X)
+    get_score(data[:, :-1])
 
     prints(scale, location)
 
