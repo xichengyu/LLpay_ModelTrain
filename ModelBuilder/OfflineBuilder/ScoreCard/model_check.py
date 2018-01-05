@@ -38,7 +38,7 @@ ks_max = met.ROC("lr", "None", score, y,
 conf_info = cnf("./conf/cnf.txt")
 scale, location = get_scale_location(float(conf_info["base_score"]), float(conf_info["gap"]), float(conf_info["odds"]))
 
-# 计算可算出现的score的极值，根据woe_score
+# 计算可能出现的score的极值，根据woe_score
 sum_max_woe_score, sum_min_woe_score = location, location
 for score_dict in woe_score:
     sum_max_woe_score += max(score_dict.values())
@@ -77,5 +77,5 @@ for i in range(n):
         print("interval: ", (x_label[i], x_label[i+1]), "interval_total: ", cnt_dict[i], "interval_bad_total: ",
               cnt_dict_1[i], "interval_bad_rate: ", cnt_dict_1[i]/cnt_dict[i])
 
-print(sum(cnt_dict.keys()), sum(cnt_dict.values()))
-# BarChart(cnt_dict.keys(), cnt_dict.values(), chart_name="ctrip_credit_score")
+cnt_dict = dict(sorted(cnt_dict.items(), key=lambda d: d[0]))
+BarChart(list(cnt_dict.keys()), list(cnt_dict.values()), chart_name="ctrip_credit_score")
