@@ -1,0 +1,11 @@
+
+# data = ../../../data/scorecard_202.dt
+data = ../../../data/ctrip_sample.dt
+
+y_idx = 0
+
+base_score = 600
+
+gap = 30
+
+odds = 10
