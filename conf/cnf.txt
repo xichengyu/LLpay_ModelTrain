@@ -1,8 +1,10 @@
+sql = select * from dbmodel.data_lianlian_xd_iv_sample
 
 # raw_data = ../../data/raw_data.dt
 # raw_data = ../../data/df_plain_104
 # raw_data = ../../data/moxie_data.dt
-raw_data = ../../data/data_xicy_fullstep_202.dt
+# raw_data = ../../data/data_xicy_fullstep_202.dt
+raw_data = ../../data/moxie_sample_single_202.dt
 
 # column_name = ../../conf/column_name.txt
 column_name = ../../conf/fullstep_202_column_name.txt
