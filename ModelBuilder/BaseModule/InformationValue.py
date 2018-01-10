@@ -290,18 +290,21 @@ class WOE(object):
         # raise ValueError
         return res, interval_list
 
-    def test_percentile_discrete(self, test_X):
+    def test_percentile_discrete(self, test_X, interval=None):
         """
         Discrete the input 2-D test numpy array based on percentile
         :param test_X: 1-D numpy array
+        :param interval: X_interval
         :return: discreted 1-D test numpy array
         """
+        if not interval:
+            interval = self.interval
         temp = []
         for idx in range(test_X.shape[-1]):
             x = test_X[:, idx]
             res = np.array([0] * x.shape[-1], dtype=int)
             logging.info("test_before_counter: " + str(Counter(x)))
-            for i, point in enumerate(self.interval[idx]):
+            for i, point in enumerate(interval[idx]):
                 point1, point2 = point[0], point[1]
                 x1 = x[np.where((x >= point1) & (x <= point2))]
                 mask = np.in1d(x, x1)
@@ -314,18 +317,21 @@ class WOE(object):
             temp.append(res)
         return np.array(temp).T
 
-    def test_interval_discrete(self, test_X):
+    def test_interval_discrete(self, test_X, interval=None):
         """
         Discrete the input 2-D test numpy array based on interval
         :param test_X: 2-D numpy array
+        :param interval: X_interval
         :return: discreted 1-D test numpy array
         """
+        if not interval:
+            interval = self.interval
         temp = []
         for idx in range(test_X.shape[-1]):
             x = test_X[:, idx]
             res = np.array([0] * x.shape[-1], dtype=int)
             logging.info("test_before_counter: " + str(Counter(x)))
-            for i, point in enumerate(self.interval[idx]):
+            for i, point in enumerate(interval[idx]):
                 point1, point2 = point[0], point[1]
                 if point1 == point2:
                     x1 = x[np.where((x >= point1) & (x <= point2))]

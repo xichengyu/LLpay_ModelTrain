@@ -1,7 +1,7 @@
 
 # data = ../../../data/scorecard_202.dt
-# data = ../../../data/ctrip_sample.dt
-data = ../../../data/data_xicy_fullstep_202.dt
+data = ../../../data/ctrip_sample.dt
+# data = ../../../data/data_xicy_fullstep_202.dt
 
 y_idx = 0
 
