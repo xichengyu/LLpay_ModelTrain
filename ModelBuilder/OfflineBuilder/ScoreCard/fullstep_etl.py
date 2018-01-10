@@ -14,6 +14,8 @@ if __name__ == "__main__":
     data = np.array(data)
     print(data.shape)
 
+    data[np.isnan(data)] = -1.0
+
     strategies = ["mean", "median", "most_frequent"]  # different strategies for dealing with missing value
 
     new_data = mvs.fill_strategy(data, strategy="median", missing_values=-1.0)
