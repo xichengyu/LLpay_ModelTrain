@@ -12,6 +12,7 @@ import MissingValueStrategy as mvs
 if __name__ == "__main__":
     data = joblib.load("../../../data/data_xicy_fullstep_202.dt")
     data = np.array(data)
+    print(data.shape)
 
     strategies = ["mean", "median", "most_frequent"]  # different strategies for dealing with missing value
 
