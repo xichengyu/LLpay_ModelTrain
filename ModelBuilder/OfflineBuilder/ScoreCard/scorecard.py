@@ -79,6 +79,8 @@ if __name__ == '__main__':
     prints(conf_info)
     scale, location = get_scale_location(float(conf_info["base_score"]), float(conf_info["gap"]), float(conf_info["odds"]))
 
+    joblib.dump((scale, location), "./conf/scale_location.coef")
+
     # 获取训练集和测试集
     data = get_raw_data(data_dir=conf_info["data"], y_idx=int(conf_info["y_idx"]))
     train_data_list, test_data_list = get_train_test_data(data=data)
